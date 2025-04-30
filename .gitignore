@@ -176,3 +176,4 @@ cython_debug/
 # Fuseki
 fuseki/data/*
 # !fuseki/data/*.ttl
+fuseki/preload/*
