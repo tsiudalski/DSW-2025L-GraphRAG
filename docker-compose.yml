@@ -21,5 +21,18 @@ services:
     tty: true
     restart: unless-stopped
 
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./app:/app
+    working_dir: /app
+    depends_on:
+      - fuseki
+      - ollama
+    tty: true
+    stdin_open: true
+
 volumes:
   ollama_data:
