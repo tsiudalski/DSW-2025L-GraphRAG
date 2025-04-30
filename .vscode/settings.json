@@ -1,0 +1,7 @@
+{
+    "makefile.configureOnOpen": false,
+    "python.defaultInterpreterPath": "/app/.venv/bin/python",
+    "python.formatting.provider": "black",
+    "python.linting.enabled": true,
+    "editor.formatOnSave": true
+}
