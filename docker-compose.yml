@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  fuseki:
+    image: stain/jena-fuseki
+    container_name: fuseki
+    ports:
+      - "3030:3030"
+    volumes:
+      - ./fuseki:/fuseki-base
+      - ./fuseki/shiro.ini:/fuseki/shiro.ini
+    command: sh -c "/jena-fuseki/fuseki-server --config=/fuseki-base/config.ttl"
+
+  ollama:
+    image: ollama/ollama
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    tty: true
+    restart: unless-stopped
+
+volumes:
+  ollama_data:
