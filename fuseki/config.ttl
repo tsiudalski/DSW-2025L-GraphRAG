@@ -1,0 +1,31 @@
+@prefix : <#> .
+@prefix fuseki: <http://jena.apache.org/fuseki#> .
+@prefix tdb2:   <http://jena.apache.org/2016/tdb#> .
+@prefix ja:     <http://jena.hpl.hp.com/2005/11/Assembler#> .
+
+[] a fuseki:Server ;
+   fuseki:services (
+     :officeService
+   ) .
+
+:officeService a fuseki:Service ;
+    fuseki:name "office" ;
+    fuseki:endpoint [
+        fuseki:operation fuseki:query ;
+        fuseki:name "sparql"
+    ] ;
+    fuseki:endpoint [
+        fuseki:operation fuseki:update ;
+        fuseki:name "update"
+    ] ;
+    fuseki:endpoint [
+        fuseki:operation fuseki:gsp-rw ;
+        fuseki:name "data"
+    ] ;
+    fuseki:dataset :officeDataset ;
+    fuseki:readable true ;
+    fuseki:writable true .
+
+:officeDataset a tdb2:DatasetTDB2 ;
+    tdb2:location "/fuseki-base/data" .
+
