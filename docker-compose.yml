@@ -4,11 +4,14 @@ services:
   fuseki:
     image: stain/jena-fuseki
     container_name: fuseki
+    user: "0"
     ports:
       - "3030:3030"
     volumes:
       - ./fuseki:/fuseki-base
       - ./fuseki/shiro.ini:/fuseki/shiro.ini
+    environment:
+      - FUSEKI_BASE=/fuseki-base
     command: sh -c "/jena-fuseki/fuseki-server --config=/fuseki-base/config.ttl"
 
   ollama:

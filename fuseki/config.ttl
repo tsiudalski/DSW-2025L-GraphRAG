@@ -27,5 +27,5 @@
     fuseki:writable true .
 
 :officeDataset a tdb2:DatasetTDB2 ;
-    tdb2:location "/fuseki-base/data" .
+    tdb2:location "/fuseki-base/databases/office" .
 

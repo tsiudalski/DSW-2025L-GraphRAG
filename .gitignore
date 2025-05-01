@@ -177,3 +177,5 @@ cython_debug/
 fuseki/data/*
 # !fuseki/data/*.ttl
 fuseki/preload/*
+fuseki/databases/*
+fuseki/templates/*
