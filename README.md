@@ -11,3 +11,40 @@
 ## Questions related to templates:
 - template1: What is the average temperature measured by a specific device within a given time range, along with the device type and measurement unit?
 - template2: How many devices of each type are present on a specific floor?
+
+## 🧑‍💻 Development Guide
+
+This project supports two development workflows:
+
+---
+
+#### Prerequisites
+
+- [Docker](https://www.docker.com/)
+- [VS Code](https://code.visualstudio.com/)
+- [Dev Containers Extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+
+### 1. (Recommended) Dev Container (VS Code + Docker)
+
+The preferred approach uses a **VS Code Dev Container**, providing:
+- Preconfigured Python + Poetry + Jupyter
+- Networked access to Fuseki and Ollama
+- Easy environment reproducibility
+
+**Steps**
+
+1. Clone this repository.
+2. Open the folder in VS Code.
+3. Press `Ctrl+Shift+P → Dev Containers: Reopen in Container`.
+
+Once the environment is built and open, you may develop code as you like.
+To test connection with Apache Fuseki and Ollama use predefined make commands.
+To see the list of all make commands use `make help`.
+
+### 2. Without Dev Container
+
+**Steps**
+
+1. Clone this repository.
+2. Open the folder in VS Code.
+3. Use `make up` to build the services. You may need to use additional make commands, and other manual commands to develop new code in this setup.
