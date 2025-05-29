@@ -179,3 +179,23 @@ fuseki/data/*
 fuseki/preload/*
 fuseki/databases/*
 fuseki/templates/*
+
+# Virtual Environment
+.env
+.venv
+env/
+venv/
+ENV/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Data directory (except embeddings)
+app/data/*
+!app/data/template_embeddings.json
+
+# Logs
+*.log

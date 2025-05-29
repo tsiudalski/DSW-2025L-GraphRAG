@@ -1,0 +1,30 @@
+{
+    "templates": [
+        {
+            "id": "template1",
+            "file": "template1.rq.j2",
+            "description": "Retrieves average temperature measurements for a specific device within a time range",
+            "required_parameters": [
+                "device",
+                "min_time",
+                "max_time"
+            ],
+            "parameter_descriptions": {
+                "device": "The URI of the device to query",
+                "min_time": "Start time in ISO format (YYYY-MM-DDTHH:MM:SS)",
+                "max_time": "End time in ISO format (YYYY-MM-DDTHH:MM:SS)"
+            }
+        },
+        {
+            "id": "template2",
+            "file": "template2.rq.j2",
+            "description": "Counts devices by type for a specific floor",
+            "required_parameters": [
+                "floor"
+            ],
+            "parameter_descriptions": {
+                "floor": "The URI of the floor to query (format: ic:floor<number>, e.g., ic:floor1)"
+            }
+        }
+    ]
+}
