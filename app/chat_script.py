@@ -2,10 +2,10 @@ import requests
 import json
 import numpy as np
 import os
+from dotenv import load_dotenv
+from embedding_utils import cos_sim
 
-from sklearn.metrics.pairwise import cosine_similarity
-from embedding_utils import get_sentence_embedding, cos_sim
-import gensim.downloader as api
+load_dotenv()
 
 def format_messages(messages):
     """Formats the message history into a structured conversation string."""
@@ -13,9 +13,9 @@ def format_messages(messages):
 
 def stream_response(prompt):
     with requests.post(
-        "http://localhost:11434/api/generate",
+        f"http://{os.getenv('OLLAMA_HOST')}:{os.getenv('OLLAMA_PORT')}/api/generate",
         json={
-            "model": "deepseek-r1:1.5b",
+            "model": f"{os.getenv('OLLAMA_MODEL')}",
             "prompt": prompt,
             "stream": True
         },
@@ -27,7 +27,7 @@ def stream_response(prompt):
 
 if __name__ == "__main__":
     messages = []
-    word_vectors = api.load("glove-wiki-gigaword-100")
+    
     with open('question_template.json', 'r') as file:
         pairs = json.load(file)
 
@@ -35,27 +35,33 @@ if __name__ == "__main__":
         user_input = input(">>> ")
         if user_input.lower() == "end":
             break
-        
 
-        embedded_input = get_sentence_embedding(user_input, word_vectors)
-        best_sim = np.argmax([cos_sim(embedded_input, emb) for emb in list(pairs.values())])
+        embedding = requests.post(
+            f"http://{os.getenv('OLLAMA_HOST')}:{os.getenv('OLLAMA_PORT')}/api/embed",
+            json={
+                "model": "all-minilm",
+                "input": user_input
+            }
+        ).json()
+
+        embedding = np.array(embedding['embeddings'][0])
+        embedding = embedding / np.linalg.norm(embedding)
+        print("Searching for best template... ", end="", flush=True)
+
+        ## Pad the paiirs from 100 to 384 dimensions
+        # Assuming pairs are already in the correct format, we pad them to 384 dimensions
+        pairs = {k: np.pad(np.array(v), (0, 384 - len(v)), 'constant') for k, v in pairs.items()}
+        best_sim = np.argmax([cos_sim(embedding, emb) for emb in list(pairs.values())])
+        print(f"Best match: {list(pairs.keys())[best_sim]}")
+        print(f"Similarity score: {cos_sim(embedding, list(pairs.values())[best_sim])}")
+
         best_template = os.path.join("templates", f"{list(pairs.keys())[best_sim]}.rq.j2")
 
+        with open(best_template, 'r') as template_file:
+            template = template_file.read()
+
+        safe_template = template.replace('{', '{{').replace('}', '}}').replace('{{user_input}}', '{user_input}')
+        user_input = safe_template.format(user_input=user_input)
+        print("Using template:", user_input)
+
         messages.append({"role": "user", "content": user_input})
-
-        chat_context = format_messages(messages)
-        response_chunks = []
-        finished_thinking = False
-        prev_chunk = None
-        for chunk in stream_response(chat_context):
-            if finished_thinking:
-                print(chunk, end="", flush=True)
-            if prev_chunk == "</think>":
-                finished_thinking = True
-            response_chunks.append(chunk)
-            prev_chunk = chunk
-        print("\n")
-
-        messages.append({"role": "assistant", "content": "".join(response_chunks)})
-
-        

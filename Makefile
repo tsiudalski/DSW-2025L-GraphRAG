@@ -7,7 +7,7 @@ endif
 # Fallback defaults (can be overridden in .env or via command line)
 OLLAMA_HOST ?= localhost
 OLLAMA_PORT ?= 11434
-OLLAMA_MODEL ?= llama2
+OLLAMA_MODEL ?= llama3.2
 
 FUSEKI_HOST ?= localhost
 FUSEKI_PORT ?= 3030
