@@ -146,33 +146,44 @@
             }
         },
         {
-            "id": "was_window_opened_in_room",
-            "file": "was_window_opened_in_room.rq.j2",
-            "description": "Checks if a window (contact sensor) was opened in a room during a time period.",
+            "id": "was_window_opened_on_floor",
+            "file": "was_window_opened_on_floor.rq.j2",
+            "description": "Checks if a window (contact sensor) was opened on a floor during a time period.",
             "required_parameters": [
-                "room",
+                "floor",
                 "min_time",
                 "max_time"
             ],
             "parameter_descriptions": {
-                "room": "The URI of the room to query (e.g., ic:roomname_7.07).",
+                "floor": "The URI of the floor to query (e.g., ic:VL_floor_7).",
                 "min_time": "Start time in ISO format (YYYY-MM-DDTHH:MM:SS).",
                 "max_time": "End time in ISO format (YYYY-MM-DDTHH:MM:SS)."
             }
         },
         {
-            "id": "count_window_openings_in_room",
-            "file": "count_window_openings_in_room.rq.j2",
-            "description": "Counts how many times a window (contact sensor) was opened in a room during a time period.",
+            "id": "count_window_openings_on_floor",
+            "file": "count_window_openings_on_floor.rq.j2",
+            "description": "Counts how many times a window (contact sensor) was opened on a floor during a time period.",
             "required_parameters": [
-                "room",
+                "floor",
                 "min_time",
                 "max_time"
             ],
             "parameter_descriptions": {
-                "room": "The URI of the room to query (e.g., ic:roomname_7.07).",
+                "floor": "The URI of the floor to query (e.g., ic:VL_floor_7).",
                 "min_time": "Start time in ISO format (YYYY-MM-DDTHH:MM:SS).",
                 "max_time": "End time in ISO format (YYYY-MM-DDTHH:MM:SS)."
+            }
+        },
+        {
+            "id": "list_device_properties",
+            "file": "list_device_properties.rq.j2",
+            "description": "Lists all measurement properties a given device is capable of, returned as a single comma-separated string.",
+            "required_parameters": [
+                "device"
+            ],
+            "parameter_descriptions": {
+                "device": "The URI of the device to query."
             }
         }
     ]

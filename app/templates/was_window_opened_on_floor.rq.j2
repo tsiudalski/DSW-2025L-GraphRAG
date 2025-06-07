@@ -6,14 +6,15 @@ PREFIX ic: <https://interconnectproject.eu/example/>
 PREFIX om: <http://www.wurvoc.org/vocabularies/om-1.8/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema>
 PREFIX saref: <https://saref.etsi.org/core/>
-PREFIX xsd: <http://www.w3.org/2001/XMLSchema>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
-SELECT (COUNT(?measurement) as ?result) WHERE {
-  {{ room }} s4bldg:contains ?device .
+ASK WHERE {
+  ?room s4bldg:isSpaceOf {{ floor }} .
+  ?room s4bldg:contains ?device .
   ?device saref:makesMeasurement ?measurement .
   ?measurement saref:relatesToProperty ?prop .
   ?prop a ic:Contact .
-  ?measurement saref:hasValue "false"^^xsd:boolean .
+  ?measurement saref:hasValue "1"^^xsd:int .
   ?measurement saref:hasTimestamp ?timestamp .
   FILTER(?timestamp >= xsd:dateTime("{{ min_time }}") && ?timestamp <= xsd:dateTime("{{ max_time }}"))
 }
