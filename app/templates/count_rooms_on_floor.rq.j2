@@ -1,0 +1,5 @@
+SELECT (COUNT(DISTINCT ?room) as ?result) WHERE {
+  ?room a s4bldg:BuildingSpace .
+  ?room s4bldg:isSpaceOf {{ floor }} .
+  ?room rdfs:comment "room" .
+}

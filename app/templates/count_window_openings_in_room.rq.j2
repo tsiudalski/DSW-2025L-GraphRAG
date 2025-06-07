@@ -8,17 +8,12 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema>
 PREFIX saref: <https://saref.etsi.org/core/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema>
 
-SELECT ?device ?device_type ?property (AVG(?value) AS ?averageValue) ?unit WHERE {
+SELECT (COUNT(?measurement) as ?result) WHERE {
+  {{ room }} s4bldg:contains ?device .
   ?device saref:makesMeasurement ?measurement .
-  ?measurement saref:hasValue ?value .
+  ?measurement saref:relatesToProperty ?prop .
+  ?prop a ic:Contact .
+  ?measurement saref:hasValue "false"^^xsd:boolean .
   ?measurement saref:hasTimestamp ?timestamp .
-  ?measurement saref:isMeasuredIn ?unit .
-  ?measurement saref:relatesToProperty ?property .
-  ?property a saref:Temperature .
-  ?device ic:hasDeviceType ?device_type .
-  FILTER (
-    ?device = {{ device }} &&
-    ?timestamp >= xsd:dateTime("{{ min_time }}") &&
-    ?timestamp <= xsd:dateTime("{{ max_time }}")
-  )
-} GROUP BY ?device ?device_type ?property ?unit
+  FILTER(?timestamp >= xsd:dateTime("{{ min_time }}") && ?timestamp <= xsd:dateTime("{{ max_time }}"))
+}

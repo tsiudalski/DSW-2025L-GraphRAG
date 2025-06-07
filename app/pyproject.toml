@@ -12,6 +12,7 @@ requests = "^2.32.3"
 rdflib = "^7.1.4"
 notebook = "^7.4.1"
 ipykernel = "^6.29.5"
+sentence-transformers = "^4.1.0"
 
 [build-system]
 requires = ["poetry-core"]

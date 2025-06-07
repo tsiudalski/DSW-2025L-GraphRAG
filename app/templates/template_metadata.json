@@ -23,7 +23,156 @@
                 "floor"
             ],
             "parameter_descriptions": {
-                "floor": "The URI of the floor to query (format: ic:floor<number>, e.g., ic:floor1)"
+                "floor": "The URI of the floor to query (format: ic:floor<number>, e.g., ic:VL_floor_7)"
+            }
+        },
+        {
+            "id": "avg_measurement_by_device",
+            "file": "avg_measurement_by_device.rq.j2",
+            "description": "Calculates the average of a specific numeric measurement for a single device over a given time period.",
+            "required_parameters": [
+                "device",
+                "property_type",
+                "min_time",
+                "max_time"
+            ],
+            "parameter_descriptions": {
+                "device": "The URI of the device to query.",
+                "property_type": "The URI of the measurement type to average (e.g., saref:Temperature, ic:BatteryLevel, ic:CO2Level, saref:Humidity).",
+                "min_time": "Start time in ISO format (YYYY-MM-DDTHH:MM:SS).",
+                "max_time": "End time in ISO format (YYYY-MM-DDTHH:MM:SS)."
+            }
+        },
+        {
+            "id": "avg_measurement_by_floor",
+            "file": "avg_measurement_by_floor.rq.j2",
+            "description": "Calculates the average of a specific numeric measurement for all devices on a given floor over a given time period.",
+            "required_parameters": [
+                "floor",
+                "property_type",
+                "min_time",
+                "max_time"
+            ],
+            "parameter_descriptions": {
+                "floor": "The URI of the floor to query (e.g., ic:VL_floor_7).",
+                "property_type": "The URI of the measurement type to average (e.g., saref:Temperature, ic:BatteryLevel, ic:CO2Level, saref:Humidity).",
+                "min_time": "Start time in ISO format (YYYY-MM-DDTHH:MM:SS).",
+                "max_time": "End time in ISO format (YYYY-MM-DDTHH:MM:SS)."
+            }
+        },
+        {
+            "id": "count_type_on_floor",
+            "file": "count_type_on_floor.rq.j2",
+            "description": "Counts the number of devices of a specific model/type that are located on a specific floor.",
+            "required_parameters": [
+                "floor",
+                "device_type"
+            ],
+            "parameter_descriptions": {
+                "floor": "The URI of the floor to query (e.g., ic:VL_floor_7).",
+                "device_type": "The string representing the device model/type (e.g., 'R5')."
+            }
+        },
+        {
+            "id": "count_devices_on_floor",
+            "file": "count_devices_on_floor.rq.j2",
+            "description": "Counts the total number of unique devices located on a specific floor.",
+            "required_parameters": [
+                "floor"
+            ],
+            "parameter_descriptions": {
+                "floor": "The URI of the floor to query (e.g., ic:VL_floor_7)."
+            }
+        },
+        {
+            "id": "count_rooms_on_floor",
+            "file": "count_rooms_on_floor.rq.j2",
+            "description": "Counts the total number of unique rooms located on a specific floor.",
+            "required_parameters": [
+                "floor"
+            ],
+            "parameter_descriptions": {
+                "floor": "The URI of the floor to query (e.g., ic:VL_floor_7)."
+            }
+        },
+        {
+            "id": "latest_measurement_from_device",
+            "file": "latest_measurement_from_device.rq.j2",
+            "description": "Fetches the single most recent value of a specific numeric measurement from a single device.",
+            "required_parameters": [
+                "device",
+                "property_type"
+            ],
+            "parameter_descriptions": {
+                "device": "The URI of the device to query.",
+                "property_type": "The URI of the measurement type to retrieve (e.g., saref:Temperature, ic:BatteryLevel, ic:CO2Level, saref:Humidity)."
+            }
+        },
+        {
+            "id": "max_measurement_in_building",
+            "file": "max_measurement_in_building.rq.j2",
+            "description": "Finds the highest value ever recorded for a specific numeric measurement across all devices.",
+            "required_parameters": [
+                "property_type"
+            ],
+            "parameter_descriptions": {
+                "property_type": "The URI of the measurement type to find the maximum of (e.g., saref:Temperature, ic:BatteryLevel, ic:CO2Level, saref:Humidity)."
+            }
+        },
+        {
+            "id": "min_measurement_in_building",
+            "file": "min_measurement_in_building.rq.j2",
+            "description": "Finds the lowest value ever recorded for a specific numeric measurement across all devices.",
+            "required_parameters": [
+                "property_type"
+            ],
+            "parameter_descriptions": {
+                "property_type": "The URI of the measurement type to find the minimum of (e.g., saref:Temperature, ic:BatteryLevel, ic:CO2Level, saref:Humidity)."
+            }
+        },
+        {
+            "id": "count_devices_by_status",
+            "file": "count_devices_by_status.rq.j2",
+            "description": "Counts the number of unique devices that reported a specific status within a given time period.",
+            "required_parameters": [
+                "status",
+                "min_time",
+                "max_time"
+            ],
+            "parameter_descriptions": {
+                "status": "The device status to count (e.g., 'active').",
+                "min_time": "Start time in ISO format (YYYY-MM-DDTHH:MM:SS).",
+                "max_time": "End time in ISO format (YYYY-MM-DDTHH:MM:SS)."
+            }
+        },
+        {
+            "id": "was_window_opened_in_room",
+            "file": "was_window_opened_in_room.rq.j2",
+            "description": "Checks if a window (contact sensor) was opened in a room during a time period.",
+            "required_parameters": [
+                "room",
+                "min_time",
+                "max_time"
+            ],
+            "parameter_descriptions": {
+                "room": "The URI of the room to query (e.g., ic:roomname_7.07).",
+                "min_time": "Start time in ISO format (YYYY-MM-DDTHH:MM:SS).",
+                "max_time": "End time in ISO format (YYYY-MM-DDTHH:MM:SS)."
+            }
+        },
+        {
+            "id": "count_window_openings_in_room",
+            "file": "count_window_openings_in_room.rq.j2",
+            "description": "Counts how many times a window (contact sensor) was opened in a room during a time period.",
+            "required_parameters": [
+                "room",
+                "min_time",
+                "max_time"
+            ],
+            "parameter_descriptions": {
+                "room": "The URI of the room to query (e.g., ic:roomname_7.07).",
+                "min_time": "Start time in ISO format (YYYY-MM-DDTHH:MM:SS).",
+                "max_time": "End time in ISO format (YYYY-MM-DDTHH:MM:SS)."
             }
         }
     ]
