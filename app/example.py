@@ -1,9 +1,10 @@
-from sparql_query_processor import SPARQLQueryProcessor
-import os
-from dotenv import load_dotenv
-import requests
 import json
+import os
 import sys
+
+import requests
+from dotenv import load_dotenv
+from sparql_query_processor import SPARQLQueryProcessor
 
 # Load environment variables from .env file if it exists
 load_dotenv()
@@ -18,7 +19,7 @@ def test_ollama_connection(ollama_url):
                 "prompt": "test",
                 "stream": False
             },
-            timeout=5
+            timeout=200
         )
         response.raise_for_status()
         print("✅ Successfully connected to Ollama")
