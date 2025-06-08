@@ -17,6 +17,9 @@ FUSEKI_ENDPOINT ?= office
 DATASET_DIR ?= fuseki/data
 DATASET_NAME ?= ds
 
+# UI configuration
+UI_DIR ?= app/ui
+
 help: ## Show this help message
 	@echo "Available commands:"; \
 	grep -hE '^[a-zA-Z0-9_-]+:.*## ' Makefile | \
@@ -105,3 +108,7 @@ version-check:  ## Print current setup config variables
 	@echo "FUSEKI ENDPOINT: $(FUSEKI_ENDPOINT)"
 	@echo "DATASET DIR:     $(DATASET_DIR)"
 	@echo "DATASET NAME:    $(DATASET_NAME)"
+
+run-webapp:  ## Run the Streamlit UI
+	@echo "Starting Streamlit UI..."
+	poetry run streamlit run $(UI_DIR)/app.py
