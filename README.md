@@ -48,3 +48,7 @@ To see the list of all make commands use `make help`.
 1. Clone this repository.
 2. Open the folder in VS Code.
 3. Use `make up` to build the services. You may need to use additional make commands, and other manual commands to develop new code in this setup.
+
+
+TODO:
+[] mini graph for demo

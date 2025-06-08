@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "sparql-query-processor"
+version = "0.1.0"
+description = "A system for processing natural language queries into SPARQL using templates and LLMs"
+authors = ["Your Name <your.email@example.com>"]
+packages = [
+    { include = "app" }
+]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+sentence-transformers = "^2.2.2"
+numpy = "^1.24.3"
+Jinja2 = "^3.1.2"
+requests = "^2.31.0"
+ollama = "^0.1.6"
+python-dotenv = "^1.0.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api" 
