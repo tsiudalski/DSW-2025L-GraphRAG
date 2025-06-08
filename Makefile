@@ -1,5 +1,5 @@
 # Load .env file if it exists
-ifneq ("$(wildcard .env)","")
+ifneq (,$(wildcard .env))
 	include .env
 	export
 endif
@@ -7,11 +7,15 @@ endif
 # Fallback defaults (can be overridden in .env or via command line)
 OLLAMA_HOST ?= localhost
 OLLAMA_PORT ?= 11434
-OLLAMA_MODEL ?= llama3.2
+OLLAMA_MODEL ?= mistral:instruct
 
 FUSEKI_HOST ?= localhost
 FUSEKI_PORT ?= 3030
 FUSEKI_ENDPOINT ?= office
+
+# Dataset configuration
+DATASET_DIR ?= fuseki/data
+DATASET_NAME ?= ds
 
 help: ## Show this help message
 	@echo "Available commands:"; \
@@ -32,17 +36,56 @@ pull-model:  ## Pull model via Ollama (default: llama2)
 	docker exec -it ollama ollama pull $(OLLAMA_MODEL)
 
 # Fuseki operations
-fuseki-load:  ## Clear and load all TTL files in fuseki/data into Fuseki
-	@echo "Clearing all data from Fuseki /$(FUSEKI_ENDPOINT)..."
-	curl -s -X DELETE http://$(FUSEKI_HOST):$(FUSEKI_PORT)/$(FUSEKI_ENDPOINT)/data?default || echo "❌ Failed to clear data"
-	@echo "Loading TTL files from fuseki/data/..."
-	for file in fuseki/data/*.ttl; do \
-	  echo "Uploading $$file..."; \
-	  curl -s -X POST -H "Content-Type: text/turtle" \
-	       --data-binary "@$$file" \
-	       http://$(FUSEKI_HOST):$(FUSEKI_PORT)/$(FUSEKI_ENDPOINT)/data?default || exit 1; \
+# Works!!!
+fuseki-create-dataset:
+	@if [ -z "$(DATASET_NAME)" ]; then \
+		echo "Error: DATASET_NAME is required"; \
+		exit 1; \
+	fi
+	@echo "Creating dataset $(DATASET_NAME) in Fuseki..."
+	@curl -s -X POST -H "Content-Type: application/x-www-form-urlencoded" \
+		--data "dbName=$(DATASET_NAME)&dbType=tdb2" \
+		http://$(FUSEKI_HOST):$(FUSEKI_PORT)/$$/datasets || echo "Failed to create dataset"
+
+# Works!!!
+fuseki-delete-dataset:
+	@if [ -z "$(DATASET_NAME)" ]; then \
+		echo "Error: DATASET_NAME is required"; \
+		exit 1; \
+	fi
+	@echo "Deleting dataset $(DATASET_NAME) from Fuseki..."
+	@curl -s -X DELETE http://$(FUSEKI_HOST):$(FUSEKI_PORT)/$$/datasets/$(DATASET_NAME) || echo "Failed to delete dataset"
+
+fuseki-clear-dataset:
+	@if [ -z "$(DATASET_NAME)" ]; then \
+		echo "Error: DATASET_NAME is required"; \
+		exit 1; \
+	fi
+	@echo "Clearing dataset $(DATASET_NAME)..."
+	@curl -s -X POST -H "Content-Type: application/sparql-update" \
+		--data "CLEAR ALL" \
+		http://$(FUSEKI_HOST):$(FUSEKI_PORT)/$(DATASET_NAME)/update || echo "Failed to clear dataset"
+
+fuseki-load-dataset:
+	@if [ -z "$(DATASET_NAME)" ] || [ -z "$(DATASET_DIR)" ]; then \
+		echo "Error: DATASET_NAME and DATASET_DIR are required"; \
+		echo "Usage: make fuseki-load-dataset DATASET_NAME=<name> DATASET_DIR=<path>"; \
+		exit 1; \
+	fi
+	@echo "Setting up dataset $(DATASET_NAME) with files from $(DATASET_DIR)..."
+	@$(MAKE) fuseki-create-dataset DATASET_NAME=$(DATASET_NAME)
+	@echo "Loading TTL files..."
+	@for file in $(DATASET_DIR)/*.ttl; do \
+		echo "Uploading $$file..."; \
+		curl -s -X POST -H "Content-Type: text/turtle" \
+			--data-binary "@$$file" \
+			http://$(FUSEKI_HOST):$(FUSEKI_PORT)/$(DATASET_NAME)/data || echo "Failed to upload $$file"; \
 	done
 	@echo "All TTL files loaded successfully."
+
+fuseki-list-datasets:
+	@echo "Listing all datasets in Fuseki..."
+	@curl -s -H "Accept: application/json" http://$(FUSEKI_HOST):$(FUSEKI_PORT)/$$/datasets
 
 test-fuseki:  ## Run test query on Fuseki endpoint
 	curl -X POST http://$(FUSEKI_HOST):$(FUSEKI_PORT)/$(FUSEKI_ENDPOINT)/sparql \
@@ -60,3 +103,5 @@ version-check:  ## Print current setup config variables
 	@echo "FUSEKI HOST:     $(FUSEKI_HOST)"
 	@echo "FUSEKI PORT:     $(FUSEKI_PORT)"
 	@echo "FUSEKI ENDPOINT: $(FUSEKI_ENDPOINT)"
+	@echo "DATASET DIR:     $(DATASET_DIR)"
+	@echo "DATASET NAME:    $(DATASET_NAME)"

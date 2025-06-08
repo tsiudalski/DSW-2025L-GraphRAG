@@ -52,3 +52,16 @@ To see the list of all make commands use `make help`.
 
 TODO:
 [] mini graph for demo
+
+
+# How to add a new dataset / graph?
+
+Prerequisites: 
+- have an active environment with the dependencies
+- have the docker container hosting Fuseki runnning (`make up`)
+
+To create a new empty dataset run:
+`make fuseki-create-dataset DATASET_NAME=<your-dataset-name>"
+
+To add a new dataset and populate it with .ttl files from a specified directory, run:
+`make fuseki-load-dataset DATASET_NAME=<your-dataset-name> DATASET_DIR=<dir-with-ttl-files>"
