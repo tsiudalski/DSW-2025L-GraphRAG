@@ -1,25 +1,23 @@
 import json
 import os
-from typing import Dict, List, Optional
-import numpy as np
-from sentence_transformers import SentenceTransformer
-from jinja2 import Environment, FileSystemLoader
-import requests
-from datetime import datetime
 import time
+from typing import TYPE_CHECKING, Dict, List
+
+import numpy as np
+import requests
+from jinja2 import Environment, FileSystemLoader
+from models import TEMPLATE_REGISTRY
+from sentence_transformers import SentenceTransformer
+
+if TYPE_CHECKING:
+    from models.templates import BaseTemplate
 
 
 class SPARQLQueryProcessor:
     def __init__(self, templates_dir: str, fuseki_endpoint: str, ollama_host: str = "http://localhost:11434"):
-        self.templates_dir = templates_dir
         self.fuseki_endpoint = fuseki_endpoint
         self.ollama_host = ollama_host
         self.env = Environment(loader=FileSystemLoader(templates_dir))
-        
-        # Load template metadata
-        metadata_path = os.path.join(templates_dir, 'template_metadata.json')
-        with open(metadata_path, 'r') as f:
-            self.template_metadata = json.load(f)
         
         # Initialize embedding model with specific model name
         self.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
@@ -31,15 +29,10 @@ class SPARQLQueryProcessor:
     
     def _load_or_compute_embeddings(self) -> Dict[str, np.ndarray]:
         """Load existing embeddings or compute new ones if not found."""
-        if os.path.exists(self.embeddings_file):
-            # Always recompute embeddings to ensure consistency
-            embeddings = self._compute_template_embeddings()
-            self._save_embeddings(embeddings)
-            return embeddings
-        else:
-            embeddings = self._compute_template_embeddings()
-            self._save_embeddings(embeddings)
-            return embeddings
+        # Always recompute embeddings to ensure consistency
+        embeddings = self._compute_template_embeddings()
+        self._save_embeddings(embeddings)
+        return embeddings
     
     def _save_embeddings(self, embeddings: Dict[str, np.ndarray]) -> None:
         """Save embeddings to file."""
@@ -52,10 +45,10 @@ class SPARQLQueryProcessor:
     def _compute_template_embeddings(self) -> Dict[str, np.ndarray]:
         """Compute embeddings for all template descriptions."""
         embeddings = {}
-        for template in self.template_metadata['templates']:
-            description = template['description']
+        for template in TEMPLATE_REGISTRY.values():
+            description = template.template_description
             embedding = self.embedding_model.encode(description)
-            embeddings[template['id']] = embedding
+            embeddings[template.template_name] = embedding
         return embeddings
     
     def find_best_template(self, user_query: str) -> Dict:
@@ -71,10 +64,7 @@ class SPARQLQueryProcessor:
             )
             if similarity > best_score:
                 best_score = similarity
-                best_template = next(
-                    t for t in self.template_metadata['templates'] 
-                    if t['id'] == template_id
-                )
+                best_template = TEMPLATE_REGISTRY[template_id]
         
         return best_template
     
@@ -109,7 +99,7 @@ class SPARQLQueryProcessor:
         prompt = f"""You are a parameter extraction assistant. Your task is to extract specific parameters from a user query and return them in JSON format.
 
 Required parameters and their descriptions:
-{json.dumps(template['parameter_descriptions'], indent=2)}
+{json.dumps(template.get_fields_info(), indent=2)}
 
 User query: {user_query}
 
@@ -138,9 +128,10 @@ Example response format:
             print(f"Error extracting parameters: {str(e)}")
             return {}
     
-    def execute_query(self, template_id: str, parameters: Dict[str, str]) -> List[Dict]:
+    def execute_query(self, valid_template: "BaseTemplate") -> List[Dict]:
         """Execute the SPARQL query with the given parameters."""
-        template = self.env.get_template(f"{template_id}.rq.j2")
+        parameters = valid_template.model_dump()
+        template = self.env.get_template(valid_template.template_path)
         query = template.render(**parameters)
         
         # Print the populated SPARQL query
@@ -194,17 +185,23 @@ Answer:"""
         
         # Extract parameters
         parameters = self.extract_parameters(user_query, template)
-        missing_params = [
-            param for param in template['required_parameters']
-            if param not in parameters
-        ]
+        parameterized_template = template.model_construct(**parameters)
+        errors, missing_params = parameterized_template.validate_fields()
         
+        msg = ''
         if missing_params:
-            return f"Please provide the following information: {', '.join(missing_params)}"
+            missing_params_with_desc = [f"{k} - {v}" for k, v in template.get_fields_info().items() if k in missing_params]
+            msg += f"Please provide the following information: {', '.join(missing_params_with_desc)}\n"
+        if errors:
+            errors_with_desc = '\n'.join(f'{k}: {v}' for k, v in errors.items())
+            msg += f"Some parameters are invalid: {errors_with_desc}"
+            msg += "\nPlease try to provide these parameters in a correct format."
+        if msg:
+            return msg
         
         # Execute query
         try:
-            results = self.execute_query(template['id'], parameters)
+            results = self.execute_query(parameterized_template)
             return self.generate_response(results, user_query)
         except Exception as e:
             return f"Error processing your query: {str(e)}"

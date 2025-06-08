@@ -8,13 +8,14 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.9"
 sentence-transformers = "^2.2.2"
 numpy = "^1.24.3"
 Jinja2 = "^3.1.2"
 requests = "^2.31.0"
 ollama = "^0.1.6"
 python-dotenv = "^1.0.0"
+pydantic = "^2.11.5"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
