@@ -1,0 +1,113 @@
+{
+  "test_cases": [
+    {
+      "query": "What was the average temperature for the R5 154 sensor during the first week of May 2022?",
+      "expected_template": "avg_measurement_by_device",
+      "expected_params": {
+        "device": "ic:R5_154",
+        "property_type": "saref:Temperature",
+        "min_time": "2022-05-01T00:00:00",
+        "max_time": "2022-05-07T23:59:59"
+      },
+      "expected_result": "21.38816"
+    },
+    {
+      "query": "Can you tell me the average humidity on the 7th floor for all of last April?",
+      "expected_template": "avg_measurement_by_floor",
+      "expected_params": {
+        "floor": "ic:VL_floor_7",
+        "property_type": "saref:Humidity",
+        "min_time": "2022-04-01T00:00:00",
+        "max_time": "2022-04-30T23:59:59"
+      },
+      "expected_result": "34.43899"
+    },
+    {
+      "query": "How many 'Airwits' type devices are there on the seventh floor?",
+      "expected_template": "count_type_on_floor",
+      "expected_params": {
+        "floor": "ic:VL_floor_7",
+        "device_type": "Airwits"
+      },
+      "expected_result": "5"
+    },
+    {
+      "query": "Give me the total number of sensors on floor 7.",
+      "expected_template": "count_devices_on_floor",
+      "expected_params": {
+        "floor": "ic:VL_floor_7"
+      }
+      "expected_result": "13"
+    },
+    {
+      "query": "How many rooms does the 7th floor have?",
+      "expected_template": "count_rooms_on_floor",
+      "expected_params": {
+        "floor": "ic:VL_floor_7"
+      },
+      "expected_result": "42"
+    },
+    {
+      "query": "What was the last reported CO2 level from R5 95?",
+      "expected_template": "latest_measurement_from_device",
+      "expected_params": {
+        "device": "ic:R5_95",
+        "property_type": "ic:O2Level"
+      },
+      "expected_result": "626.0"
+    },
+    {
+      "query": "Show me the most recent battery percentage for the Zigbee Thermostat 9.",
+      "expected_template": "latest_measurement_from_device",
+      "expected_params": {
+        "device": "ic:Zigbee_Thermostat_9",
+        "property_type": "ic:BatteryLevel"
+      },
+      "expected_result": "88.0"
+    },
+    {
+      "query": "What is the absolute highest temperature ever recorded in the building?",
+      "expected_template": "max_measurement_in_building",
+      "expected_params": {
+        "property_type": "saref:Temperature"
+      },
+      "expected_result": "44.2"
+    },
+    {
+      "query": "Find the lowest humidity reading we've ever had.",
+      "expected_template": "min_measurement_in_building",
+      "expected_params": {
+        "property_type": "saref:Humidity"
+      },
+      "expected_result": "22.0"
+    },
+    {
+      "query": "How many devices reported an 'active' status in January 2023?",
+      "expected_template": "count_devices_by_status",
+      "expected_params": {
+        "status": "1",
+        "min_time": "2023-01-01T00:00:00",
+        "max_time": "2023-01-31T23:59:59"
+      },
+      "expected_result": "1"
+    },
+    {
+      "query": "How many times was a window opened on the 7th floor in September 2022?",
+      "expected_template": "count_window_openings_on_floor",
+      "expected_params": {
+        "floor": "ic:VL_floor_7",
+        "min_time": "2022-09-01T00:00:00",
+        "max_time": "2022-09-30T23:59:59"
+      },
+      "expected_result": "2"
+    },
+    {
+      "query": "What can the SmartSense Multi Sensor 22 measure?",
+      "expected_template": "list_device_properties",
+      "expected_params": {
+        "device": "ic:SmartSense_Multi_Sensor_22"
+      },
+      "expected_result": "BatteryLevel, Contact, DeviceStatus, Temperature"
+    }
+  ]
+}
