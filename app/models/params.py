@@ -1,6 +1,7 @@
 """Module with parameter validators."""
 
 import re
+from enum import Enum
 from typing import Any
 
 from pydantic import GetCoreSchemaHandler
@@ -14,7 +15,7 @@ class DeviceID(str):
     def __get_pydantic_core_schema__(
         cls, source_type: Any, handler: GetCoreSchemaHandler
     ) -> core_schema.CoreSchema:
-        
+
         """Return a core schema for validating device IDs."""
         def validate_device_id(value: str) -> str:
             value = value.strip()
@@ -29,7 +30,8 @@ class DeviceID(str):
             handler(str)
 
         )
-    
+
+
 class FloorID(str):
     """Custom string type for validating floor IDs."""
 
@@ -40,7 +42,7 @@ class FloorID(str):
         cls, source_type: Any, handler: GetCoreSchemaHandler
     ) -> core_schema.CoreSchema:
         """Return a core schema for validating floor IDs."""
-        
+
         def validate_floor_id(value: str) -> str:
             value = value.strip()
             if not value:
@@ -55,6 +57,7 @@ class FloorID(str):
             validate_floor_id,
             handler(str)
         )
+
 
 class Timestamp(str):
     """Custom string type for validating timestamps."""
@@ -74,10 +77,8 @@ class Timestamp(str):
                 raise ValueError("Timestamp cannot be empty")
 
             if cls.FULL_TIMESTAMP_REGEX.match(value):
-                print(value)
                 return value
             elif cls.DATE_ONLY_REGEX.match(value):
-                print(value)
                 return f"{value}T00:00:00"
             else:
                 raise ValueError(
@@ -86,5 +87,97 @@ class Timestamp(str):
 
         return core_schema.no_info_after_validator_function(
             validate_timestamp,
+            handler(str)
+        )
+
+
+class Property(Enum):
+    """Enum for valid property types."""
+
+    BATTERY = "ic:BatteryLevel"
+    CO2 = "ic:CO2Level"
+    CONTACT = "ic:Contact"
+    DEVICE_STATUS = "ic:DeviceStatus"
+    RUNNING_TIME = "ic:RunningTime"
+    TEMPERATURE_SETPOINT = "ic:thermostatHeatingSetpoint"
+    HUMIDITY = "saref:Humidity"
+    MOTION = "saref:Motion"
+    OCCUPANCY = "saref:Occupancy"
+    POWER = "saref:Power"
+    TEMPERATURE = "saref:Temperature"
+
+
+class PropertyType(str):
+    """Custom string type for validating property types."""
+
+    @classmethod
+    def __get_pydantic_core_schema__(
+        cls, source_type: Any, handler: GetCoreSchemaHandler
+    ) -> core_schema.CoreSchema:
+        """Return a core schema for validating property types."""
+
+        def validate_property_type(value: str) -> str:
+            normalized_value = value.strip().replace(" ", "").lower()
+            for member in Property:
+                if member.value.lower() in [normalized_value, f"ic:{normalized_value}", f"saref:{normalized_value}"]:
+                    value = member.value
+            raise ValueError(
+                f"Invalid property type '{value}'. Must be one of: {', '.join(Property._value2member_map_.keys())}"
+            )
+
+        return core_schema.no_info_after_validator_function(
+            validate_property_type,
+            handler(str)
+        )
+
+# TODO: check possible values
+# class DeviceModel(Enum):
+#     """Enum for valid device models."""
+#     AIRWITS = "Airwits"
+#     SMART_THINGS = "SmartThings"
+
+
+class DeviceType(str):
+    """Custom string type for validating device types."""
+
+    @classmethod
+    def __get_pydantic_core_schema__(
+        cls, source_type: Any, handler: GetCoreSchemaHandler
+    ) -> core_schema.CoreSchema:
+        """Return a core schema for validating device types."""
+
+        def validate_device_type(value: str) -> str:
+            value = value.strip()
+            if not value:
+                raise ValueError("Device type cannot be empty")
+            return value
+
+        return core_schema.no_info_after_validator_function(
+            validate_device_type,
+            handler(str)
+        )
+
+
+class DeviceStatus(str):
+    """Custom string type for validating device status."""
+
+    @classmethod
+    def __get_pydantic_core_schema__(
+        cls, source_type: Any, handler: GetCoreSchemaHandler
+    ) -> core_schema.CoreSchema:
+        """Return a core schema for validating device status."""
+
+        def validate_device_status(value: str) -> str:
+            value = value.strip()
+            if value in ["0", "1"]:
+                return value
+            if value.lower() == "active":
+                return "1"
+            if value.lower() == "inactive":
+                return "0"
+            raise ValueError("Device status must be '1', '0', 'active', or 'inactive'")
+
+        return core_schema.no_info_after_validator_function(
+            validate_device_status,
             handler(str)
         )
