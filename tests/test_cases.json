@@ -36,7 +36,7 @@
       "expected_template": "count_devices_on_floor",
       "expected_params": {
         "floor": "ic:VL_floor_7"
-      }
+      },
       "expected_result": "13"
     },
     {
