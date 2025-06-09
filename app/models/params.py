@@ -35,7 +35,7 @@ class DeviceID(str):
                 value = f"ic:{value}"
             if not cls.DEVICE_REGEX.match(value):
                 raise ValueError(
-                    "Device ID must match the pattern 'R5_<number>', 'SmartSense_Multi_Sensor_<number>', or 'Zigbee_Thermostat_<number>'"
+                    "Device ID must match one of the patterns: 'R5_<number>', 'SmartSense_Multi_Sensor_<number>', or 'Zigbee_Thermostat_<number>'"
                 )
             return value
 
