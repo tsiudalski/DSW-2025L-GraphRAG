@@ -219,7 +219,7 @@ class CountDevicesByStatus(BaseTemplate):
     )
 
     status: Optional[DeviceStatus] = Field(
-        None, description="The device status to count ('active', 'inactive', '1', '0')."
+        None, description="The device status to count ('active' or 'inactive')."
     )
     min_time: Optional[Timestamp] = Field(
         None, description="Start time in ISO format (YYYY-MM-DDTHH:MM:SS)."
