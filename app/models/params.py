@@ -75,7 +75,6 @@ class Timestamp(str):
             value = value.strip()
             if not value:
                 raise ValueError("Timestamp cannot be empty")
-
             if cls.FULL_TIMESTAMP_REGEX.match(value):
                 return value
             elif cls.DATE_ONLY_REGEX.match(value):
@@ -121,6 +120,7 @@ class PropertyType(str):
             for member in Property:
                 if member.value.lower() in [normalized_value, f"ic:{normalized_value}", f"saref:{normalized_value}"]:
                     value = member.value
+                    return value
             raise ValueError(
                 f"Invalid property type '{value}'. Must be one of: {', '.join(Property._value2member_map_.keys())}"
             )
