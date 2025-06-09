@@ -70,19 +70,20 @@ def test_query_processing_pipeline(test_case, processor, capsys):
 
     # --- Step 2: Extract parameters from the query ---
     extracted_params = processor.extract_parameters(query, selected_template)
-    assert extracted_params == expected_params, \
-        f"Parameter extraction failed. Expected {expected_params}, but got {extracted_params}"
-    print(f"✅ PASSED [Parameter Extraction]: Correctly extracted parameters: {extracted_params}")
+    
+    parameterized_template = selected_template.model_construct(**extracted_params)
+    errors, missing_params = parameterized_template.validate_fields()
+    assert not missing_params, f"Test case has missing parameters: {missing_params}"
+    assert not errors, f"Test case has invalid parameters: {errors}"
+    validated_params = parameterized_template.model_dump()
+
+    assert validated_params == expected_params, \
+        f"Parameter extraction failed. Expected {expected_params}, but got {validated_params}"
+    print(f"✅ PASSED [Parameter Extraction]: Correctly extracted parameters: {validated_params}")
 
     # --- Step 3: Execute the SPARQL query ---
-    parameterized_template = selected_template.model_construct(**expected_params)
-    
-    # errors, missing_params = parameterized_template.validate_fields()
-    # assert not missing_params, f"Test case has missing parameters: {missing_params}"
-    # assert not errors, f"Test case has invalid parameters: {errors}"
-    
     query_results = processor.execute_query(parameterized_template)
-    
+
     captured = capsys.readouterr()
     printed_sparql = captured.out.strip()
     
