@@ -9,33 +9,49 @@ from pydantic_core import core_schema
 
 
 class DeviceID(str):
-    """Custom string type for validating device IDs."""
+    """Custom string type for validating device IDs.
+
+    Possible devices names:
+     - ic:R5_{number}
+     - ic:SmartSense_Multi_Sensor_{number}
+     - ic:Zigbee_Thermostat_{number}
+    """
+
+    DEVICE_REGEX = re.compile(
+        r"^ic:(R5_\d+|SmartSense_Multi_Sensor_\d+|Zigbee_Thermostat_\d+)$"
+    )
 
     @classmethod
     def __get_pydantic_core_schema__(
         cls, source_type: Any, handler: GetCoreSchemaHandler
     ) -> core_schema.CoreSchema:
-
         """Return a core schema for validating device IDs."""
+
         def validate_device_id(value: str) -> str:
             value = value.strip()
             if not value:
                 raise ValueError("Device ID cannot be empty")
             if not value.startswith("ic:"):
                 value = f"ic:{value}"
+            if not cls.DEVICE_REGEX.match(value):
+                raise ValueError(
+                    "Device ID must match the pattern 'R5_<number>', 'SmartSense_Multi_Sensor_<number>', or 'Zigbee_Thermostat_<number>'"
+                )
             return value
 
         return core_schema.no_info_after_validator_function(
-            validate_device_id,
-            handler(str)
-
+            validate_device_id, handler(str)
         )
 
 
 class FloorID(str):
-    """Custom string type for validating floor IDs."""
+    """Custom string type for validating floor IDs.
 
-    FLOOR_ID_REGEX = re.compile(r"^ic:*floor\d+$")
+    Floor must match the pattern 'ic:VL_floor_{number}'.
+    """
+
+    FLOOR_ID_REGEX = re.compile(r"^ic:VL_floor_\d+$")
+    FLOOR_ID_REGEX_WITHOUT_VL = re.compile(r"^floor_\d+$")
 
     @classmethod
     def __get_pydantic_core_schema__(
@@ -47,15 +63,20 @@ class FloorID(str):
             value = value.strip()
             if not value:
                 raise ValueError("Floor ID cannot be empty")
-            if not value.startswith("ic:"):
+            if value.isdigit():
+                value = f"ic:VL_floor{value}"
+            elif cls.FLOOR_ID_REGEX_WITHOUT_VL.match(value):
+                value = f"ic:VL_{value}"
+            elif not value.startswith("ic:"):
                 value = f"ic:{value}"
             if not cls.FLOOR_ID_REGEX.match(value):
-                raise ValueError("Floor ID must match the pattern 'ic:floor<number>' (e.g., 'ic:floor1')")
+                raise ValueError(
+                    "Floor ID must match the pattern 'VL_floor_<number>' (e.g., 'VL_floor_7')"
+                )
             return value
 
         return core_schema.no_info_after_validator_function(
-            validate_floor_id,
-            handler(str)
+            validate_floor_id, handler(str)
         )
 
 
@@ -85,8 +106,7 @@ class Timestamp(str):
                 )
 
         return core_schema.no_info_after_validator_function(
-            validate_timestamp,
-            handler(str)
+            validate_timestamp, handler(str)
         )
 
 
@@ -118,7 +138,11 @@ class PropertyType(str):
         def validate_property_type(value: str) -> str:
             normalized_value = value.strip().replace(" ", "").lower()
             for member in Property:
-                if member.value.lower() in [normalized_value, f"ic:{normalized_value}", f"saref:{normalized_value}"]:
+                if member.value.lower() in [
+                    normalized_value,
+                    f"ic:{normalized_value}",
+                    f"saref:{normalized_value}",
+                ]:
                     value = member.value
                     return value
             raise ValueError(
@@ -126,15 +150,16 @@ class PropertyType(str):
             )
 
         return core_schema.no_info_after_validator_function(
-            validate_property_type,
-            handler(str)
+            validate_property_type, handler(str)
         )
 
-# TODO: check possible values
-# class DeviceModel(Enum):
-#     """Enum for valid device models."""
-#     AIRWITS = "Airwits"
-#     SMART_THINGS = "SmartThings"
+
+class DeviceModel(Enum):
+    """Enum for valid device models."""
+
+    AIRWITS = "Airwits"
+    SMART_THINGS = "SmartThings"
+    SENSOR_HUB = "Sensor Hub"
 
 
 class DeviceType(str):
@@ -147,14 +172,17 @@ class DeviceType(str):
         """Return a core schema for validating device types."""
 
         def validate_device_type(value: str) -> str:
-            value = value.strip()
-            if not value:
-                raise ValueError("Device type cannot be empty")
-            return value
+            normalized_value = value.strip().replace(" ", "").lower()
+            for member in DeviceModel:
+                if member.value.replace(" ", "").lower() == normalized_value:
+                    value = member.value
+                    return value
+            raise ValueError(
+                f"Invalid device type '{value}'. Must be one of: {', '.join(DeviceType._value2member_map_.keys())}"
+            )
 
         return core_schema.no_info_after_validator_function(
-            validate_device_type,
-            handler(str)
+            validate_device_type, handler(str)
         )
 
 
@@ -178,6 +206,5 @@ class DeviceStatus(str):
             raise ValueError("Device status must be '1', '0', 'active', or 'inactive'")
 
         return core_schema.no_info_after_validator_function(
-            validate_device_status,
-            handler(str)
+            validate_device_status, handler(str)
         )
