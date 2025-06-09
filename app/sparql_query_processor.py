@@ -186,13 +186,12 @@ Answer:"""
         # Find the best matching template
         template = self.find_best_template(user_query)
         if not template:
-            return "I couldn't find a suitable query template for your question."
+            return "CONTINUE", "I couldn't find a suitable query template for your question."
         
         # Extract parameters
         parameters = self.extract_parameters(user_query, template)
         parameterized_template = template.model_construct(**parameters)
         errors, missing_params = parameterized_template.validate_fields()
-        
         msg = ''
         if missing_params:
             missing_params_with_desc = [f"{k} - {v}" for k, v in template.get_fields_info().items() if k in missing_params]
@@ -202,11 +201,11 @@ Answer:"""
             msg += f"Some parameters are invalid: {errors_with_desc}"
             msg += "\nPlease try to provide these parameters in a correct format."
         if msg:
-            return msg
+            return "CONTINUE", msg
         
         # Execute query
         try:
             results = self.execute_query(parameterized_template)
-            return self.generate_response(results, user_query)
+            return "RESET", self.generate_response(results, user_query)
         except Exception as e:
-            return f"Error processing your query: {str(e)}"
+            return "RESET", f"Error processing your query: {str(e)}."
