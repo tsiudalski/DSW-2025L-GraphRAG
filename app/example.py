@@ -15,7 +15,7 @@ def test_ollama_connection(ollama_url):
         response = requests.post(
             f"{ollama_url}/api/generate",
             json={
-                "model": "llama2",
+                "model": "llama3.2:1b",
                 "prompt": "test",
                 "stream": False
             },
@@ -58,12 +58,17 @@ def main():
     # Get configuration from environment variables with defaults
     fuseki_host = os.getenv('FUSEKI_HOST', 'localhost')
     fuseki_port = os.getenv('FUSEKI_PORT', '3030')
-    fuseki_endpoint = os.getenv('FUSEKI_ENDPOINT', 'ds')
+    
+    # The test will target a specific dataset, e.g., 'office-test'.
+    # You can set DATASET_NAME in a .env file to change this.
+    dataset_name = os.getenv('DATASET_NAME', 'ds')
+    
     ollama_host = os.getenv('OLLAMA_HOST', 'localhost')
     ollama_port = os.getenv('OLLAMA_PORT', '11434')
 
-    # Construct endpoints
-    fuseki_url = f'http://{fuseki_host}:{fuseki_port}/{fuseki_endpoint}/query'
+    # Construct the correct Fuseki URL for the specific dataset, ending in /query
+    # as expected by the SPARQLQueryProcessor's internal logic.
+    fuseki_url = f'http://{fuseki_host}:{fuseki_port}/{dataset_name}/query'
     ollama_url = f'http://{ollama_host}:{ollama_port}'
 
     print(f"Connecting to Fuseki at: {fuseki_url}")
@@ -86,8 +91,8 @@ def main():
 
     # Example queries
     queries = [
-        "What was the average temperature of device ic:device1 between 2024-01-01 and 2024-01-02?",
-        "How many devices of each type are on floor ic:floor1?"
+        "How many rooms does the ic:VL_floor_7 floor have?",
+        "What was the last reported CO2 level from device ic:R5_95?"
     ]
 
     # Process each query

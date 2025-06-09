@@ -23,7 +23,7 @@
                 "floor"
             ],
             "parameter_descriptions": {
-                "floor": "The URI of the floor to query (format: ic:floor<number>, e.g., ic:VL_floor_7)"
+                "floor": "The URI of the floor to query (format: ic:VL_floor_<number>, e.g., ic:VL_floor_7)"
             }
         },
         {

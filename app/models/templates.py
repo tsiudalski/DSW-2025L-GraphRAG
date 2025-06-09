@@ -60,51 +60,6 @@ class BaseTemplate(BaseModel):
         return missing_fields
 
 
-class Template1(BaseTemplate):
-    """Template for retrieving average temperature measurements for a specific device within a time range."""
-
-    template_name: ClassVar[str] = "template1"
-    template_description: ClassVar[str] = "Retrieves average temperature measurements for a specific device within a time range"
-
-    device: Optional[DeviceID] = Field(
-        None,
-        description="The URI of the device to query",
-    )
-    min_time: Optional[Timestamp] = Field(
-        None,
-        description="Start time in ISO format (YYYY-MM-DDTHH:MM:SS)",
-    )
-    max_time: Optional[Timestamp] = Field(
-        None,
-        description="End time in ISO format (YYYY-MM-DDTHH:MM:SS)",
-    )
-
-    def validate_fields(self):
-        errors, missing_fields = super().validate_fields()
-
-        invalid_fields = list(errors.keys()) + missing_fields
-        if "min_time" not in invalid_fields and "max_time" not in invalid_fields:
-            min_dt = datetime.fromisoformat(self.min_time)
-            max_dt = datetime.fromisoformat(self.max_time)
-
-            if min_dt > max_dt:
-                errors["min_time"] = "min_time must be before max_time"
-                errors["max_time"] = "max_time must be after min_time"
-        return errors, missing_fields
-
-
-class Template2(BaseTemplate):
-    """Template for retrieving the number of devices of each type on a specific floor."""
-
-    template_name: ClassVar[str] = "template2"
-    template_description: ClassVar[str] = "Counts devices by type for a specific floor"
-
-    floor: Optional[FloorID] = Field(
-        None,
-        description="The URI of the floor to query (format: ic:floor<number>, e.g., ic:VL_floor_7)",
-    )
-
-
 class AvgMeasurementByDevice(BaseTemplate):
     """Calculates the average of a specific numeric measurement for a single device over a given time period."""
 

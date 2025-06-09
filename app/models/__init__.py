@@ -12,14 +12,10 @@ from .templates import (
     ListDeviceProperties,
     MaxMeasurementInBuilding,
     MinMeasurementInBuilding,
-    Template1,
-    Template2,
     WasWindowOpenedOnFloor,
 )
 
 TEMPLATE_REGISTRY = {
-    "template1": Template1,
-    "template2": Template2,
     "avg_measurement_by_device": AvgMeasurementByDevice,
     "avg_measurement_by_floor": AvgMeasurementByFloor,
     "count_type_on_floor": CountTypeOnFloor,
