@@ -1,12 +1,4 @@
-PREFIX owl: <http://www.w3.org/2002/07/owl#>
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX s4bldg: <https://saref.etsi.org/saref4bldg/>
-PREFIX s4ener: <https://saref.etsi.org/saref4ener/>
-PREFIX ic: <https://interconnectproject.eu/example/>
-PREFIX om: <http://www.wurvoc.org/vocabularies/om-1.8/>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX saref: <https://saref.etsi.org/core/>
-PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+{% include '_prefixes.jinja' %}
 
 SELECT (COUNT(DISTINCT ?device) as ?result) WHERE {
   ?device saref:makesMeasurement ?measurement .
