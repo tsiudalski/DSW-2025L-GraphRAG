@@ -23,7 +23,7 @@
                 "floor"
             ],
             "parameter_descriptions": {
-                "floor": "The URI of the floor to query (format: ic:floor<number>, e.g., ic:VL_floor_7)"
+                "floor": "The URI of the floor to query (format: ic:VL_floor_<number>, e.g., ic:VL_floor_7)"
             }
         },
         {
@@ -140,7 +140,7 @@
                 "max_time"
             ],
             "parameter_descriptions": {
-                "status": "The device status to count (e.g., 'active').",
+                "status": "The device status to count (1 for active, 0 for inactive).",
                 "min_time": "Start time in ISO format (YYYY-MM-DDTHH:MM:SS).",
                 "max_time": "End time in ISO format (YYYY-MM-DDTHH:MM:SS)."
             }

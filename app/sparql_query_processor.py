@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Dict, List
 import numpy as np
 import requests
 from jinja2 import Environment, FileSystemLoader
-from models import TEMPLATE_REGISTRY
+from app.models import TEMPLATE_REGISTRY
 from sentence_transformers import SentenceTransformer
 
 if TYPE_CHECKING:
@@ -80,7 +80,7 @@ class SPARQLQueryProcessor:
                 response = requests.post(
                     f"{self.ollama_host}/api/generate",
                     json={
-                        "model": "llama2",
+                        "model": "llama3.2:1b",
                         "prompt": prompt,
                         "stream": False
                     },
@@ -191,14 +191,16 @@ Answer:"""
         # Extract parameters
         parameters = self.extract_parameters(user_query, template)
         parameterized_template = template.model_construct(**parameters)
-        errors, missing_params = parameterized_template.validate_fields()
+        # errors, missing_params = parameterized_template.validate_fields()
+        
         msg = ''
         if missing_params:
             missing_params_with_desc = [f"{k} - {v}" for k, v in template.get_fields_info().items() if k in missing_params]
             msg += f"Please provide the following information: {', '.join(missing_params_with_desc)}\n"
         if errors:
             errors_with_desc = '\n'.join(f'{k}: {v}' for k, v in errors.items())
-            msg += f"Some parameters are invalid: {errors_with_desc}"
+            msg += f"Some parameters are invalid: {parameters}\n"
+            msg += f"Errors: {errors_with_desc}"
             msg += "\nPlease try to provide these parameters in a correct format."
         if msg:
             return "CONTINUE", msg
