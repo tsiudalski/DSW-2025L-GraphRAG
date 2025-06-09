@@ -30,8 +30,13 @@ class SPARQLQueryProcessor:
     def _load_or_compute_embeddings(self) -> Dict[str, np.ndarray]:
         """Load existing embeddings or compute new ones if not found."""
         # Always recompute embeddings to ensure consistency
-        embeddings = self._compute_template_embeddings()
-        self._save_embeddings(embeddings)
+        if not os.path.exists(self.embeddings_file):
+            print("No template embedding file found, creating new embeddings...")
+            embeddings = self._compute_template_embeddings()
+            self._save_embeddings(embeddings)
+        else:
+            with open(self.embeddings_file) as embedding_file:
+                embeddings = json.load(embedding_file)
         return embeddings
     
     def _save_embeddings(self, embeddings: Dict[str, np.ndarray]) -> None:

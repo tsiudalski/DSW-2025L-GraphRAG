@@ -39,7 +39,7 @@ def test_fuseki_connection(fuseki_url):
             fuseki_url.replace('/query', '/sparql'),
             params={'query': 'SELECT * WHERE { ?s ?p ?o } LIMIT 1'},
             headers={'Accept': 'application/sparql-results+json'},
-            timeout=5
+            # timeout=5
         )
         response.raise_for_status()
         print("✅ Successfully connected to Fuseki")
