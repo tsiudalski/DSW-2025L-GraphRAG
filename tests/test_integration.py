@@ -70,10 +70,9 @@ def test_query_processing_pipeline(test_case, processor, capsys):
 
     # --- Step 2: Extract parameters from the query ---
     extracted_params = processor.extract_parameters(query, selected_template)
-    
-    parameterized_template = selected_template.model_construct(**extracted_params)
-    errors, missing_params = parameterized_template.validate_fields()
-    assert not missing_params, f"Test case has missing parameters: {missing_params}"
+
+    parameterized_template, errors, missing = selected_template.create_and_validate(extracted_params)
+    assert not missing, f"Test case has missing parameters: {missing}"
     assert not errors, f"Test case has invalid parameters: {errors}"
     validated_params = parameterized_template.model_dump()
 

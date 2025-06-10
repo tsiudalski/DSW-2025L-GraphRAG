@@ -1,8 +1,8 @@
 """Template models for validating and managing template parameters."""
 
-from typing import ClassVar, Dict, List, Optional, Tuple, get_args
+from typing import Any, ClassVar, Dict, List, Optional, Tuple
 
-from pydantic import BaseModel, Field, TypeAdapter
+from pydantic import BaseModel, Field, ConfigDict, ValidationError
 
 from .params import (
     DeviceID,
@@ -22,10 +22,19 @@ class BaseTemplate(BaseModel):
     template_name: ClassVar[str]
     template_description: ClassVar[str]
 
+    model_config = ConfigDict(
+        validate_assignment=True,
+    )
+
     @property
     def template_path(self) -> str:
         """Return the path to the template file."""
         return f"{self.template_name}.rq.j2"
+    
+    @classmethod
+    def get_fields(cls) -> List[str]:
+        """Return a list of field names for the template."""
+        return list(cls.__pydantic_fields__.keys())
 
     @classmethod
     def get_fields_info(cls) -> Dict[str, str]:
@@ -35,39 +44,35 @@ class BaseTemplate(BaseModel):
             fields_info[field_name] = field.description or ""
         return fields_info
 
-    def validate_fields(self) -> Tuple[Dict[str, str], List[str]]:
-        errors = {}
-        missing_fields = []
+    @classmethod
+    def create_and_validate(
+        cls, data: Dict[str, Any]
+    ) -> Tuple[Optional["BaseTemplate"], Dict[str, str], List[str]]:
+        """
+        Attempts to create a validated model instance from input data.
 
-        for field_name, field in self.__pydantic_fields__.items():
-            value = getattr(self, field_name)
-            if value is None:
-                missing_fields.append(field_name)
-            else:
-                try:
-                    # FIXME Assuming the Template model fields are of type Optional[T]
-                    sub_types = [
-                        t for t in get_args(field.annotation) if t is not type(None)
-                    ]
-                    annotation = sub_types[0]
-                    TypeAdapter(annotation).validate_python(value)
-                except Exception as e:
-                    msg = e.errors()[0].get("msg", str(e))
-                    errors[field_name] = str(msg)
+        Returns a tuple containing:
+        1. The validated model instance (or None if validation fails).
+        2. A dictionary of validation errors keyed by field name.
+        3. A list of any missing required fields.
+        """
+        errors: Dict[str, str] = {}
+        missing_fields: List[str] = []
 
-        return errors, missing_fields
+        try:
+            instance = cls.model_validate(data)
+            return instance, {}, []
 
-    def is_valid(self) -> bool:
-        errors, missing_fields = self.validate_fields()
-        return not errors and not missing_fields
+        except ValidationError as e:
+            for error in e.errors():
+                field_name = str(error["loc"][0]) if error["loc"] else "__root__"
 
-    def get_errors(self) -> Dict[str, str]:
-        errors, _ = self.validate_fields()
-        return errors
+                if error["type"] == "missing":
+                    missing_fields.append(field_name)
+                else:
+                    errors[field_name] = error["msg"]
 
-    def get_missing_fields(self) -> List[str]:
-        _, missing_fields = self.validate_fields()
-        return missing_fields
+            return None, errors, missing_fields
 
 
 class AvgMeasurementByDevice(BaseTemplate):

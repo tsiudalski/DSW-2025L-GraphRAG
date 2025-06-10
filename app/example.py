@@ -15,7 +15,7 @@ def test_ollama_connection(ollama_url):
         response = requests.post(
             f"{ollama_url}/api/generate",
             json={
-                "model": "llama3.2:1b",
+                "model": "llama2",
                 "prompt": "test",
                 "stream": False
             },
@@ -91,8 +91,9 @@ def main():
 
     # Example queries
     queries = [
-        "How many rooms does the ic:VL_floor_7 floor have?",
-        "What was the last reported CO2 level from device ic:R5_95?"
+        "How many rooms does the 7th floor have?",
+        'What was the average temperature for the R5 154 sensor during the first week of May 2022?',
+        "What was the last reported CO2 level from R5 95 device?"
     ]
 
     # Process each query

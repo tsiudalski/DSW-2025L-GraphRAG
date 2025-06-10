@@ -194,9 +194,8 @@ ENV/
 *.swp
 *.swo
 
-# Data directory (except embeddings)
+# Data directory
 app/data/*
-!app/data/template_embeddings.json
 
 # Logs
 *.log
