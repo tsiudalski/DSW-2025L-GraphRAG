@@ -103,16 +103,11 @@ def main():
         )
         
         st.header("💬 Response Settings")
-        response_format = st.radio(
-            "Response Format",
-            ["Detailed", "Standard", "Concise"],
-            index=1,
-            help="Choose how detailed you want the responses to be"
-        )
+        response_format = "Standard"  # fixed to Standard format
         
         show_sparql = st.checkbox(
             "Show SPARQL Query",
-            value=False,
+            value=True,
             help="Display the generated SPARQL query in the response"
         )
         
