@@ -93,7 +93,7 @@ def main():
     
     # Create options in the sidebar
     with st.sidebar:
-        st.header("Dataset Selection")
+        st.header("📦 Dataset Selection")
         dataset_names = [get_dataset_name(ds) for ds in datasets]
         selected_dataset = st.selectbox(
             "Select Dataset",
@@ -102,9 +102,7 @@ def main():
             label_visibility="collapsed"
         )
         
-        st.markdown("---")
-        
-        st.header("Response Settings")
+        st.header("💬 Response Settings")
         response_format = st.radio(
             "Response Format",
             ["Detailed", "Standard", "Concise"],
@@ -136,10 +134,8 @@ def main():
         else:
             table_limit = 100  # Default value
         
-        st.markdown("---")
-        
         st.header("History")
-        if st.button("Clear Chat History"):
+        if st.button("🗑️ Clear Chat History"):
             st.session_state.messages = []
             st.rerun()
     
