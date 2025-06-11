@@ -96,7 +96,7 @@ def main():
     
     # Create options in the sidebar
     with st.sidebar:
-        st.header("Dataset Selection")
+        st.header("📦 Dataset Selection")
         dataset_names = [get_dataset_name(ds) for ds in datasets]
         selected_dataset = st.selectbox(
             "Select Dataset",
@@ -105,19 +105,12 @@ def main():
             label_visibility="collapsed"
         )
         
-        st.markdown("---")
-        
-        st.header("Response Settings")
-        response_format = st.radio(
-            "Response Format",
-            ["Detailed", "Standard", "Concise"],
-            index=1,
-            help="Choose how detailed you want the responses to be"
-        )
+        st.header("💬 Response Settings")
+        response_format = "Standard"  # fixed to Standard format
         
         show_sparql = st.checkbox(
             "Show SPARQL Query",
-            value=False,
+            value=True,
             help="Display the generated SPARQL query in the response"
         )
         
@@ -139,10 +132,8 @@ def main():
         else:
             table_limit = 100  # Default value
         
-        st.markdown("---")
-        
         st.header("History")
-        if st.button("Clear Chat History"):
+        if st.button("🗑️ Clear Chat History"):
             st.session_state.messages = []
             st.rerun()
     

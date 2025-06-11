@@ -21,7 +21,7 @@ class SPARQLQueryProcessor:
         self.env = Environment(loader=FileSystemLoader(templates_dir))
         
         # Initialize embedding model with specific model name
-        self.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
+        self.embedding_model = SentenceTransformer('mixedbread-ai/mxbai-embed-large-v1') # all-MiniLM-L6-v2
         
         # Load or compute template embeddings
         data_dir = os.path.join(os.path.dirname(templates_dir), 'data')
@@ -85,7 +85,7 @@ class SPARQLQueryProcessor:
                 response = requests.post(
                     f"{self.ollama_host}/api/generate",
                     json={
-                        "model": f"{self.ollama_model}",
+                        "model": "llama2", # FIXME:  not to be hardcoded!!!
                         "prompt": prompt,
                         "stream": False
                     },
