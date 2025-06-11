@@ -60,22 +60,57 @@ class SPARQLQueryProcessor:
             embeddings[template.template_name] = embedding
         return embeddings
     
+    def validate_template(self, user_prompt, template):
+        template_description = template.template_description
+        temlate_params = template.get_fields_info()
+
+        prompt = f"""You are validator of templates. In our scenario we have a template which should be strictly related to user prompt. You will be given user prompt and a tamplate description in raw text and template parameter names along with their description.
+
+User Query: {user_prompt};
+Template Description: {template_description};
+Template Parameters with Descriptions: {temlate_params}
+
+Instructions: Return your answer in exactly one word. Response with Yes or No.
+
+
+"""
+        try:
+            response = self._call_ollama(prompt)
+            if response == "Yes":
+                return True
+            else:
+                return False
+        except Exception as e:
+            return str(e)
+
     def find_best_template(self, user_query: str) -> Dict:
         """Find the most relevant template for the user query."""
         query_embedding = self.embedding_model.encode(user_query)
         
-        best_score = -1
-        best_template = None
+        scores = np.array([])
+        templates = np.array([])
         
         for template_id, template_embedding in self.template_embeddings.items():
             similarity = np.dot(query_embedding, template_embedding) / (
                 np.linalg.norm(query_embedding) * np.linalg.norm(template_embedding)
             )
-            if similarity > best_score:
-                best_score = similarity
-                best_template = TEMPLATE_REGISTRY[template_id]
+            scores = np.append(scores, similarity)
+            templates = np.append(templates, TEMPLATE_REGISTRY[template_id])
+
+        templates = templates[np.argsort(scores)[::-1]]
+    
+        template = None
+        for id, init_template in enumerate(templates):
+            validation_result = self.validate_template(user_query, init_template)
+            if validation_result is False:
+                validation_result = self.validate_template(user_query, init_template)
+                if validation_result is False:
+                    continue
+            if validation_result is True:
+                template = init_template
+                break
         
-        return best_template
+        return template
     
     def _call_ollama(self, prompt: str, max_retries: int = 3, timeout: int = 60) -> str:
         """Make a direct HTTP call to Ollama API with retries."""

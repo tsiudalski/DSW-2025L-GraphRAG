@@ -46,9 +46,7 @@ if __name__ == "__main__":
             break
 
         user_input = user_input + new_user_input
-        print(user_input)
         status, response = processor.process_query(user_input)
-        print(f"Response: {response}")
         if status == "RESET":  
             user_input = ""
         elif status == "CONTINUE":
