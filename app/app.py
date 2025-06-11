@@ -175,24 +175,68 @@ Try asking a question about your selected dataset!"""
         # Generate and display assistant response
         with st.chat_message("assistant"):
             with st.spinner("Thinking..."):
-                # First get the SPARQL query if needed
-                if show_sparql:
-                    processor = st.session_state.processor
-                    template = processor.find_best_template(prompt)
-                    if template:
-                        parameters = processor.extract_parameters(prompt, template)
-                        parameters = {key: str(value) for key, value in parameters.items()}
-                        parameterized_template, errors, missing = template.create_and_validate(parameters)
-                        if parameterized_template:
+                processor = st.session_state.processor
+                template = processor.find_best_template(prompt)
+                if template:
+                    parameters = processor.extract_parameters(prompt, template)
+                    parameters = {key: str(value) for key, value in parameters.items()}
+                    parameterized_template, errors, missing = template.create_and_validate(parameters)
+                    
+                    if parameterized_template:
+                        # Get the SPARQL query if needed
+                        if show_sparql:
                             template = processor.env.get_template(parameterized_template.template_path)
                             sparql_query = template.render(**parameters)
                             with st.expander("View SPARQL Query", expanded=False):
                                 st.code(f"# Template: {parameterized_template.template_name}\n{sparql_query}", language="sparql")
-                
-                # Then get the actual response
-                response = get_basic_response(prompt, selected_dataset, response_format, show_sparql, show_table, table_limit)
-                st.markdown(response)
-                st.session_state.messages.append({"role": "assistant", "content": response})
+                        
+                        # Execute query and get results
+                        try:
+                            results = processor.execute_query(parameterized_template)
+                            
+                            # Show table if requested
+                            if show_table and results:
+                                with st.expander("View Results Table", expanded=False):
+                                    # Convert results to DataFrame format
+                                    if results:
+                                        # Get all unique column names from the results
+                                        columns = set()
+                                        for result in results:
+                                            columns.update(result.keys())
+                                        
+                                        # Create a list of dictionaries for DataFrame
+                                        table_data = []
+                                        for result in results[:table_limit]:  # Apply row limit
+                                            row = {}
+                                            for col in columns:
+                                                # Handle missing values and extract the 'value' from the binding
+                                                row[col] = result.get(col, {}).get('value', '')
+                                            table_data.append(row)
+                                        
+                                        # Display the table
+                                        st.dataframe(
+                                            table_data,
+                                            use_container_width=True,
+                                            hide_index=True
+                                        )
+                            
+                            # Generate and show the response
+                            response = processor.generate_response(results, prompt)
+                            st.markdown(response)
+                            st.session_state.messages.append({"role": "assistant", "content": response})
+                            
+                        except Exception as e:
+                            error_msg = f"Error processing your query: {str(e)}"
+                            st.error(error_msg)
+                            st.session_state.messages.append({"role": "assistant", "content": error_msg})
+                    else:
+                        error_msg = "Could not validate the query parameters. Please check your input."
+                        st.error(error_msg)
+                        st.session_state.messages.append({"role": "assistant", "content": error_msg})
+                else:
+                    error_msg = "I couldn't find a suitable query template for your question."
+                    st.error(error_msg)
+                    st.session_state.messages.append({"role": "assistant", "content": error_msg})
 
 if __name__ == "__main__":
     main() 
