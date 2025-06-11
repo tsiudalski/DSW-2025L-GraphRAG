@@ -64,7 +64,7 @@ class FloorID(str):
             if not value:
                 raise ValueError("Floor ID cannot be empty")
             if value.isdigit():
-                value = f"ic:VL_floor{value}"
+                value = f"ic:VL_floor_{value}"
             elif cls.FLOOR_ID_REGEX_WITHOUT_VL.match(value):
                 value = f"ic:VL_{value}"
             elif not value.startswith("ic:"):

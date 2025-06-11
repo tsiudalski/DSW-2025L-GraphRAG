@@ -80,7 +80,7 @@ class SPARQLQueryProcessor:
                 response = requests.post(
                     f"{self.ollama_host}/api/generate",
                     json={
-                        "model": "llama3.2:1b",
+                        "model": "llama2",
                         "prompt": prompt,
                         "stream": False
                     },
@@ -103,7 +103,9 @@ class SPARQLQueryProcessor:
         """Extract parameters from user query using Ollama."""
         prompt = f"""You are a parameter extraction assistant. Your task is to extract specific parameters from a user query and return them in JSON format.
 
-Required parameters and their descriptions:
+Required parameters:
+{json.dumps(template.get_fields(), indent=2)}
+Parameters descriptions:
 {json.dumps(template.get_fields_info(), indent=2)}
 
 User query: {user_query}
@@ -111,15 +113,10 @@ User query: {user_query}
 Instructions:
 1. Extract ONLY the parameters listed above
 2. Return ONLY a valid JSON object with the extracted parameters
-3. Do not include any other text or explanation
-4. If a parameter is not found, omit it from the JSON
-
-Example response format:
-{{
-    "parameter1": "value1",
-    "parameter2": "value2"
-}}"""
-        
+3. Ensure the extracted parameters have the correct format specified in the description
+4. Do not include any other text or explanation
+5. If a parameter is not found, omit it from the JSON
+"""
         try:
             response = self._call_ollama(prompt)
             # Clean the response to ensure it's valid JSON
@@ -190,12 +187,17 @@ Answer:"""
         
         # Extract parameters
         parameters = self.extract_parameters(user_query, template)
-        parameterized_template = template.model_construct(**parameters)
-        # errors, missing_params = parameterized_template.validate_fields()
-        
+        parameters = {key: str(value) for key, value in parameters.items()}
+        print(f"Extracted parameters: {parameters}")
+        parameterized_template, errors, missing = template.create_and_validate(parameters)
+        if parameterized_template:
+            print(f"✅ Success! Instance created: {parameterized_template}")
+        else:
+            print("❌ Failure!")
+
         msg = ''
-        if missing_params:
-            missing_params_with_desc = [f"{k} - {v}" for k, v in template.get_fields_info().items() if k in missing_params]
+        if missing:
+            missing_params_with_desc = [f"{k} - {v}" for k, v in template.get_fields_info().items() if k in missing]
             msg += f"Please provide the following information: {', '.join(missing_params_with_desc)}\n"
         if errors:
             errors_with_desc = '\n'.join(f'{k}: {v}' for k, v in errors.items())
