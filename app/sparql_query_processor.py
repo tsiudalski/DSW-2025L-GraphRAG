@@ -52,7 +52,11 @@ class SPARQLQueryProcessor:
         embeddings = {}
         for template in TEMPLATE_REGISTRY.values():
             description = template.template_description
-            embedding = self.embedding_model.encode(description)
+            field_info = template.get_fields_info()
+            context = description + "\nFields:\n" + "\n".join(
+                f"- {k}: {v}" for k, v in field_info.items()
+            )
+            embedding = self.embedding_model.encode(context)
             embeddings[template.template_name] = embedding
         return embeddings
     
