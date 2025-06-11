@@ -1,11 +1,12 @@
 import streamlit as st
 import requests
 import json
+import os
+import sys
 from typing import List, Dict
-
-# Configuration
-FUSEKI_HOST = "localhost"
-FUSEKI_PORT = 3030
+from dotenv import load_dotenv
+from sparql_query_processor import SPARQLQueryProcessor
+from models import TEMPLATE_REGISTRY # Removed to break circular dependency
 
 # Set page config to show title in navigation bar
 st.set_page_config(
@@ -13,6 +14,24 @@ st.set_page_config(
     page_icon="💬",
     layout="wide"
 )
+
+# Add parent directory to Python path for imports
+app_dir = os.path.dirname(os.path.abspath(__file__))
+if app_dir not in sys.path:
+    sys.path.append(app_dir)
+
+# Load environment variables
+load_dotenv()
+
+# Configuration
+FUSEKI_HOST = os.getenv('FUSEKI_HOST', 'localhost')
+FUSEKI_PORT = os.getenv('FUSEKI_PORT', '3030')
+FUSEKI_ENDPOINT = os.getenv('FUSEKI_ENDPOINT', 'demo7floor')
+OLLAMA_HOST = os.getenv('OLLAMA_HOST', 'localhost')
+OLLAMA_PORT = os.getenv('OLLAMA_PORT', '11434')
+
+# --- Initialization of SPARQLQueryProcessor --- #
+# This must be done only once per app run, usually outside of functions or in st.session_state
 
 def get_available_datasets() -> List[Dict]:
     """Get list of available datasets from Fuseki."""
@@ -35,25 +54,36 @@ def get_dataset_name(dataset: Dict) -> str:
     """Extract dataset name from dataset info."""
     return dataset.get("ds.name", "").strip("/")
 
-def get_basic_response(query: str, dataset: str, response_format: str, show_sparql: bool, show_table: bool, table_limit: int) -> str:
-    """Generate a basic response for the chat interface."""
-    # This is a placeholder - you can enhance this later
-    response = f"I received your query about dataset '{dataset}': {query}\n\n"
-    
-    if show_sparql:
-        # Placeholder for actual SPARQL query
-        response += "Generated SPARQL query:\n```sparql\nSELECT ?s ?p ?o WHERE { ?s ?p ?o }\n```\n\n"
-    
-    response += "This is a placeholder response. The actual response logic will be implemented later."
-    
-    if response_format == "Detailed":
-        response += "\n\nAdditional details would be shown here..."
-    elif response_format == "Concise":
-        response = response.split("\n\n")[0]  # Just show the first part
-    
-    return response
+def get_basic_response(query: str, dataset: str, 
+                       response_format: str, show_sparql: bool,
+                       show_table: bool, table_limit: int) -> str:
+    """Generate a response using SPARQLQueryProcessor."""
+    try:
+        processor = st.session_state.processor
+        status, response = processor.process_query(query)
+        
+        if status == "RESET":
+            return response
+        elif status == "CONTINUE":
+            return response + "\n\nPlease continue your query..."
+        else:
+            return f"Error processing query: {response}"
+            
+    except Exception as e:
+        return f"Error: {str(e)}"
 
 def main():
+    # Initialize processor if not already in session state
+    if 'processor' not in st.session_state:
+        fuseki_url = f'http://{FUSEKI_HOST}:{FUSEKI_PORT}/{FUSEKI_ENDPOINT}/query'
+        ollama_url = f'http://{OLLAMA_HOST}:{OLLAMA_PORT}'
+        print(fuseki_url)
+        st.session_state.processor = SPARQLQueryProcessor(
+            templates_dir=os.path.join(app_dir, 'templates'),
+            fuseki_endpoint=fuseki_url,
+            ollama_host=ollama_url
+        )
+
     # Get available datasets
     datasets = get_available_datasets()
     

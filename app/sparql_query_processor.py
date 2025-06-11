@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Dict, List
 import numpy as np
 import requests
 from jinja2 import Environment, FileSystemLoader
-from app.models import TEMPLATE_REGISTRY
+from models import TEMPLATE_REGISTRY
 from sentence_transformers import SentenceTransformer
 
 if TYPE_CHECKING:
@@ -133,6 +133,7 @@ Instructions:
     def execute_query(self, valid_template: "BaseTemplate") -> List[Dict]:
         """Execute the SPARQL query with the given parameters."""
         parameters = valid_template.model_dump()
+        print(f"---TEMPLATE---\n{valid_template.template_name}")
         template = self.env.get_template(valid_template.template_path)
         query = template.render(**parameters)
         

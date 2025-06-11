@@ -105,4 +105,4 @@ version-check:  ## Print current setup config variables
 
 run-webapp:  ## Run the Streamlit UI
 	@echo "Starting Streamlit UI..."
-	poetry run streamlit run $(UI_DIR)/app.py
+	poetry run streamlit run --server.fileWatcherType none $(UI_DIR)/app.py
