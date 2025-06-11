@@ -286,3 +286,16 @@ class ListDeviceProperties(BaseTemplate):
         None,
         description="The name of the device to query, possibe formats are R5_<number>, SmartSense_Multi_Sensor_<number>, Zigbee_Thermostat_<number>.",
     )
+
+class ListDevicesAndTypesOnFloor(BaseTemplate):
+    """Lists all devices and their types located on a specific floor."""
+    # TODO: mark this template as multiple-row output, and handle differently
+    template_name: ClassVar[str] = "list_devices_and_types_on_floor"
+    template_description: ClassVar[str] = (
+        "Lists all devices and their types located on a specific floor."
+    )
+
+    floor: Optional[FloorID] = Field(
+        None,
+        description="The name of the floor to query in format VL_floor_<number> (e.g., VL_floor_7).",
+    )

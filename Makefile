@@ -4,21 +4,17 @@ ifneq (,$(wildcard .env))
 	export
 endif
 
-# Fallback defaults (can be overridden in .env or via command line)
-OLLAMA_HOST ?= localhost
-OLLAMA_PORT ?= 11434
-OLLAMA_MODEL ?= mistral:instruct
-
-FUSEKI_HOST ?= localhost
-FUSEKI_PORT ?= 3030
-FUSEKI_ENDPOINT ?= office
-
-# Dataset configuration
-DATASET_DIR ?= fuseki/data
-DATASET_NAME ?= ds
-
-# UI configuration
-UI_DIR ?= app/ui
+# Environment variables are now defined in .env file
+# Required variables:
+# OLLAMA_HOST - Ollama server hostname
+# OLLAMA_PORT - Ollama server port
+# OLLAMA_MODEL - Ollama model name
+# FUSEKI_HOST - Fuseki server hostname
+# FUSEKI_PORT - Fuseki server port
+# FUSEKI_ENDPOINT - Fuseki endpoint name
+# DATASET_DIR - Directory containing TTL files
+# DATASET_NAME - Name of the Fuseki dataset
+# UI_DIR - Directory containing the Streamlit UI
 
 help: ## Show this help message
 	@echo "Available commands:"; \
@@ -39,7 +35,6 @@ pull-model:  ## Pull model via Ollama (default: llama2)
 	docker exec -it ollama ollama pull $(OLLAMA_MODEL)
 
 # Fuseki operations
-# Works!!!
 fuseki-create-dataset:
 	@if [ -z "$(DATASET_NAME)" ]; then \
 		echo "Error: DATASET_NAME is required"; \
@@ -50,7 +45,6 @@ fuseki-create-dataset:
 		--data "dbName=$(DATASET_NAME)&dbType=tdb2" \
 		http://$(FUSEKI_HOST):$(FUSEKI_PORT)/$$/datasets || echo "Failed to create dataset"
 
-# Works!!!
 fuseki-delete-dataset:
 	@if [ -z "$(DATASET_NAME)" ]; then \
 		echo "Error: DATASET_NAME is required"; \
@@ -111,4 +105,4 @@ version-check:  ## Print current setup config variables
 
 run-webapp:  ## Run the Streamlit UI
 	@echo "Starting Streamlit UI..."
-	poetry run streamlit run $(UI_DIR)/app.py
+	poetry run streamlit run --server.fileWatcherType none $(UI_DIR)/app.py

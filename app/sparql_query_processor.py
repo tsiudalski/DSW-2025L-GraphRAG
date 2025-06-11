@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Dict, List
 import numpy as np
 import requests
 from jinja2 import Environment, FileSystemLoader
-from app.models import TEMPLATE_REGISTRY
+from models import TEMPLATE_REGISTRY
 from sentence_transformers import SentenceTransformer
 
 if TYPE_CHECKING:
@@ -52,7 +52,11 @@ class SPARQLQueryProcessor:
         embeddings = {}
         for template in TEMPLATE_REGISTRY.values():
             description = template.template_description
-            embedding = self.embedding_model.encode(description)
+            field_info = template.get_fields_info()
+            context = description + "\nFields:\n" + "\n".join(
+                f"- {k}: {v}" for k, v in field_info.items()
+            )
+            embedding = self.embedding_model.encode(context)
             embeddings[template.template_name] = embedding
         return embeddings
     
@@ -133,6 +137,7 @@ Instructions:
     def execute_query(self, valid_template: "BaseTemplate") -> List[Dict]:
         """Execute the SPARQL query with the given parameters."""
         parameters = valid_template.model_dump()
+        print(f"---TEMPLATE---\n{valid_template.template_name}")
         template = self.env.get_template(valid_template.template_path)
         query = template.render(**parameters)
         
