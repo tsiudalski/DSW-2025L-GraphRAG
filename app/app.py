@@ -174,9 +174,10 @@ Try asking a question about your selected dataset!"""
         
         # Generate and display assistant response
         with st.chat_message("assistant"):
-            response = get_basic_response(prompt, selected_dataset, response_format, show_sparql, show_table, table_limit)
-            st.markdown(response)
-            st.session_state.messages.append({"role": "assistant", "content": response})
+            with st.spinner("Thinking..."):
+                response = get_basic_response(prompt, selected_dataset, response_format, show_sparql, show_table, table_limit)
+                st.markdown(response)
+                st.session_state.messages.append({"role": "assistant", "content": response})
 
 if __name__ == "__main__":
     main() 
