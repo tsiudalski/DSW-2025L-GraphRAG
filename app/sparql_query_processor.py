@@ -14,9 +14,10 @@ if TYPE_CHECKING:
 
 
 class SPARQLQueryProcessor:
-    def __init__(self, templates_dir: str, fuseki_endpoint: str, ollama_host: str = "http://localhost:11434"):
+    def __init__(self, templates_dir: str, fuseki_endpoint: str, ollama_host: str = "http://localhost:11434", ollama_model: str = "llama2"):
         self.fuseki_endpoint = fuseki_endpoint
         self.ollama_host = ollama_host
+        self.ollama_model = ollama_model
         self.env = Environment(loader=FileSystemLoader(templates_dir))
         
         # Initialize embedding model with specific model name
@@ -84,7 +85,7 @@ class SPARQLQueryProcessor:
                 response = requests.post(
                     f"{self.ollama_host}/api/generate",
                     json={
-                        "model": "llama2",
+                        "model": f"{self.ollama_model}",
                         "prompt": prompt,
                         "stream": False
                     },

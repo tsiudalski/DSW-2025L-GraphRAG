@@ -9,13 +9,13 @@ from sparql_query_processor import SPARQLQueryProcessor
 # Load environment variables from .env file if it exists
 load_dotenv()
 
-def test_ollama_connection(ollama_url):
+def test_ollama_connection(ollama_url, ollama_model):
     """Test connection to Ollama service"""
     try:
         response = requests.post(
             f"{ollama_url}/api/generate",
             json={
-                "model": "llama2",
+                "model": ollama_model,
                 "prompt": "test",
                 "stream": False
             },
@@ -65,6 +65,7 @@ def main():
     
     ollama_host = os.getenv('OLLAMA_HOST', 'localhost')
     ollama_port = os.getenv('OLLAMA_PORT', '11434')
+    ollama_model = os.getenv('OLLAMA_MODEL', 'llama2')
 
     # Construct the correct Fuseki URL for the specific dataset, ending in /query
     # as expected by the SPARQLQueryProcessor's internal logic.
@@ -79,14 +80,15 @@ def main():
         print("Exiting due to Fuseki connection failure")
         sys.exit(1)
     
-    if not test_ollama_connection(ollama_url):
+    if not test_ollama_connection(ollama_url, ollama_model):
         print("Exiting due to Ollama connection failure")
         sys.exit(1)
 
     processor = SPARQLQueryProcessor(
         templates_dir=os.path.join(app_dir, 'templates'),
         fuseki_endpoint=fuseki_url,
-        ollama_host=ollama_url
+        ollama_host=ollama_url,
+        ollama_model=ollama_model
     )
 
     # Example queries

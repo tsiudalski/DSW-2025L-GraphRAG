@@ -12,7 +12,7 @@
       "expected_result": "21.38816"
     },
     {
-      "query": "Can you tell me the average humidity on the 7th floor for all of last April?",
+      "query": "Can you tell me the average humidity on the 7th floor for all of April 2022?",
       "expected_template": "avg_measurement_by_floor",
       "expected_params": {
         "floor": "ic:VL_floor_7",
