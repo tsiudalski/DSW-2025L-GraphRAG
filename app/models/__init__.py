@@ -13,6 +13,7 @@ from .templates import (
     MaxMeasurementInBuilding,
     MinMeasurementInBuilding,
     WasWindowOpenedOnFloor,
+    ListDevicesAndTypesOnFloor
 )
 
 TEMPLATE_REGISTRY = {
@@ -28,4 +29,5 @@ TEMPLATE_REGISTRY = {
     "was_window_opened_on_floor": WasWindowOpenedOnFloor,
     "count_window_openings_on_floor": CountWindowOpeningsOnFloor,
     "list_device_properties": ListDeviceProperties,
+    "list_devices_and_types_on_floor": ListDevicesAndTypesOnFloor,
 }

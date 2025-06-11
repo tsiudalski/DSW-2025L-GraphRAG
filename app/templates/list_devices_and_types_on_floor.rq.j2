@@ -1,0 +1,7 @@
+{% include '_prefixes.jinja' %}
+
+SELECT DISTINCT (STRAFTER(STR(?device), "example/") AS ?device_name) ?device_type WHERE {
+  ?room s4bldg:isSpaceOf {{ floor }} .
+  ?room s4bldg:contains ?device .
+  ?device ic:hasDeviceType ?device_type .
+}
