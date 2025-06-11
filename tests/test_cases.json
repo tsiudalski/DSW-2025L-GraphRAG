@@ -52,7 +52,7 @@
       "expected_template": "latest_measurement_from_device",
       "expected_params": {
         "device": "ic:R5_95",
-        "property_type": "ic:O2Level"
+        "property_type": "ic:CO2Level"
       },
       "expected_result": "626.0"
     },
