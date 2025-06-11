@@ -2,6 +2,7 @@ import json
 import os
 import pytest
 import re
+import time
 
 from app.sparql_query_processor import SPARQLQueryProcessor
 from dotenv import load_dotenv
@@ -29,6 +30,7 @@ def processor():
     
     ollama_host = os.getenv('OLLAMA_HOST', 'localhost')
     ollama_port = os.getenv('OLLAMA_PORT', '11434')
+    ollama_model = os.getenv('OLLAMA_MODEL', 'llama2')
 
     fuseki_url = f'http://{fuseki_host}:{fuseki_port}/{dataset_name}/query'
     ollama_url = f'http://{ollama_host}:{ollama_port}'
@@ -45,7 +47,8 @@ def processor():
     return SPARQLQueryProcessor(
         templates_dir=templates_dir,
         fuseki_endpoint=fuseki_url,
-        ollama_host=ollama_url
+        ollama_host=ollama_url,
+        ollama_model=ollama_model
     )
 
 # --- Integration Tests ---
@@ -103,3 +106,5 @@ def test_query_processing_pipeline(test_case, processor, capsys):
         f"SPARQL result mismatch. Expected '{expected_result}', but got '{actual_result_binding}'."
 
     print(f"✅ PASSED [SPARQL Result Validation]: The query returned the correct value '{expected_result}'.")
+
+    time.sleep(1)  # Allow time for Ollama to process the request

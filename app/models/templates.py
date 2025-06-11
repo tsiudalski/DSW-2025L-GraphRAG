@@ -80,22 +80,26 @@ class AvgMeasurementByDevice(BaseTemplate):
 
     template_name: ClassVar[str] = "avg_measurement_by_device"
     template_description: ClassVar[str] = (
-        "Calculates the average of a specific numeric measurement for a single device over a given time period."
+        """
+        Calculates the average (mean) of a specific numeric measurement for a given device (sensor) over a given time period.
+        Example: 'What was the average <measurement> on <device> during the first week of <month> <year>?'
+        Example: 'What was the average <measurement> level reported by <device> in the last month?'
+        """
     )
 
     device: Optional[DeviceID] = Field(
         None,
-        description="The name of the device to query, possibe formats are R5_<number>, SmartSense_Multi_Sensor_<number>, Zigbee_Thermostat_<number>.",
+        description="The name of the device to query, possible formats are R5_<number>, SmartSense_Multi_Sensor_<number>, Zigbee_Thermostat_<number>.",
     )
     property_type: Optional[PropertyType] = Field(
         None,
-        description=f"The URI of the measurement type to average, possibe values are: {', '.join(Property._value2member_map_.keys())}.",
+        description=f"The URI identifier of the measurement type to average, possible values are: {', '.join(Property._value2member_map_.keys())}.",
     )
     min_time: Optional[Timestamp] = Field(
-        None, description="Start time in ISO format (YYYY-MM-DDTHH:MM:SS)."
+        None, description="Starting time of the queried period in ISO format (YYYY-MM-DDTHH:MM:SS)."
     )
     max_time: Optional[Timestamp] = Field(
-        None, description="End time in ISO format (YYYY-MM-DDTHH:MM:SS)."
+        None, description="Ending time of the queried period in ISO format (YYYY-MM-DDTHH:MM:SS)."
     )
 
 
@@ -104,7 +108,11 @@ class AvgMeasurementByFloor(BaseTemplate):
 
     template_name: ClassVar[str] = "avg_measurement_by_floor"
     template_description: ClassVar[str] = (
-        "Calculates the average of a specific numeric measurement for all devices on a given floor over a given time period."
+        """
+        Calculates the average (mean) of a specific numeric measurement for all devices on a given floor over a given time period.
+        Example: 'What was the average <measurement> level on the <floor> during the first week of <month> <year>?'
+        Example: 'What was the mean <measurement> level reported by devices on the <floor> in the last month?'
+        """
     )
 
     floor: Optional[FloorID] = Field(
@@ -113,13 +121,13 @@ class AvgMeasurementByFloor(BaseTemplate):
     )
     property_type: Optional[PropertyType] = Field(
         None,
-        description=f"The URI of the measurement type to average, possibe values are: {', '.join(Property._value2member_map_.keys())}.",
+        description=f"The URI identifier of the measurement type to average, possible values are: {', '.join(Property._value2member_map_.keys())}.",
     )
     min_time: Optional[Timestamp] = Field(
-        None, description="Start time in ISO format (YYYY-MM-DDTHH:MM:SS)."
+        None, description="Starting time of the queried period in ISO format (YYYY-MM-DDTHH:MM:SS)."
     )
     max_time: Optional[Timestamp] = Field(
-        None, description="End time in ISO format (YYYY-MM-DDTHH:MM:SS)."
+        None, description="Ending time of the queried period in ISO format (YYYY-MM-DDTHH:MM:SS)."
     )
 
 
@@ -128,7 +136,11 @@ class CountTypeOnFloor(BaseTemplate):
 
     template_name: ClassVar[str] = "count_type_on_floor"
     template_description: ClassVar[str] = (
-        "Counts the number of devices of a specific model/type that are located on a specific floor."
+        """
+        Counts the number of devices of a specific model/type that are located on a specific floor.
+        Example: 'How many <device_type> devices are located on the <floor>?'
+        Example: 'What is the total number of <device_type> devices on the <floor>?'
+        """
     )
 
     floor: Optional[FloorID] = Field(
@@ -146,7 +158,11 @@ class CountDevicesOnFloor(BaseTemplate):
 
     template_name: ClassVar[str] = "count_devices_on_floor"
     template_description: ClassVar[str] = (
-        "Counts the total number of unique devices located on a specific floor."
+        """
+        Counts the total number of unique devices located on a specific floor.
+        Example: 'How many devices are located on the <floor>?'
+        Example: 'What is the total number of devices on the <floor>?'
+        """
     )
 
     floor: Optional[FloorID] = Field(
@@ -160,7 +176,11 @@ class CountRoomsOnFloor(BaseTemplate):
 
     template_name: ClassVar[str] = "count_rooms_on_floor"
     template_description: ClassVar[str] = (
-        "Counts the total number of unique rooms located on a specific floor."
+        """
+        Counts the total number of unique rooms located on a specific floor.
+        Example: 'How many rooms are located on the <floor>?'
+        Example: 'What is the total number of rooms on the <floor>?'
+        """
     )
 
     floor: Optional[FloorID] = Field(
@@ -174,16 +194,20 @@ class LatestMeasurementFromDevice(BaseTemplate):
 
     template_name: ClassVar[str] = "latest_measurement_from_device"
     template_description: ClassVar[str] = (
-        "Fetches the single most recent value of a specific numeric measurement from a single device."
+        """
+        Fetches the last (latest, most recent) value of a specific numeric measurement made by a given device.
+        Example: 'What was the last reported <measurement> level from <device>?'
+        Example: 'What is the latest reading of <measurement> reported by <device>?'
+        """
     )
 
     device: Optional[DeviceID] = Field(
         None,
-        description="The name of the device to query, possibe formats are R5_<number>, SmartSense_Multi_Sensor_<number>, Zigbee_Thermostat_<number>.",
+        description="The name of the device for which to fetch the last reported measurement, possible formats are R5_<number>, SmartSense_Multi_Sensor_<number>, Zigbee_Thermostat_<number>.",
     )
     property_type: Optional[PropertyType] = Field(
         None,
-        description=f"The URI of the measurement type to average, possibe values are: {', '.join(Property._value2member_map_.keys())}.",
+        description=f"The URI identifier of the measurement type to fetch, possible values are: {', '.join(Property._value2member_map_.keys())}.",
     )
 
 
@@ -192,12 +216,16 @@ class MaxMeasurementInBuilding(BaseTemplate):
 
     template_name: ClassVar[str] = "max_measurement_in_building"
     template_description: ClassVar[str] = (
-        "Finds the highest value ever recorded for a specific numeric measurement across all devices."
+        """
+        Finds the highest (top, maximum) value ever recorded (in all history) for a specific numeric measurement across all devices.
+        Example: 'What was the highest <measurement> level ever recorded in the building?'
+        Example: 'What is the maximum <measurement> level ever reported by any device?'
+        """
     )
 
     property_type: Optional[PropertyType] = Field(
         None,
-        description=f"The URI of the measurement type to average, possibe values are: {', '.join(Property._value2member_map_.keys())}.",
+        description=f"The URI identifier of the measurement type to fetch, possible values are: {', '.join(Property._value2member_map_.keys())}.",
     )
 
 
@@ -206,12 +234,16 @@ class MinMeasurementInBuilding(BaseTemplate):
 
     template_name: ClassVar[str] = "min_measurement_in_building"
     template_description: ClassVar[str] = (
-        "Finds the lowest value ever recorded for a specific numeric measurement across all devices."
+        """
+        Finds the lowest (bottom, minimum) value ever recorded (in all history) for a specific numeric measurement across all devices.
+        Example: 'What was the lowest <measurement> level ever recorded in the building?'
+        Example: 'What is the minimum <measurement> level ever reported by any device?'
+        """
     )
 
     property_type: Optional[PropertyType] = Field(
         None,
-        description=f"The URI of the measurement type to average, possibe values are: {', '.join(Property._value2member_map_.keys())}.",
+        description=f"The URI identifier of the measurement type to fetch, possible values are: {', '.join(Property._value2member_map_.keys())}.",
     )
 
 
@@ -220,17 +252,21 @@ class CountDevicesByStatus(BaseTemplate):
 
     template_name: ClassVar[str] = "count_devices_by_status"
     template_description: ClassVar[str] = (
-        "Counts the number of unique devices that reported a specific status within a given time period."
+        """
+        Counts the number of unique devices that reported a specific status within a given time period.
+        Example: 'How many devices are currently active?'
+        Example: 'How many devices were inactive during the last week?'
+        """
     )
 
     status: Optional[DeviceStatus] = Field(
         None, description="The device status to count ('active' or 'inactive')."
     )
     min_time: Optional[Timestamp] = Field(
-        None, description="Start time in ISO format (YYYY-MM-DDTHH:MM:SS)."
+        None, description="Starting time of the queried period in ISO format (YYYY-MM-DDTHH:MM:SS)."
     )
     max_time: Optional[Timestamp] = Field(
-        None, description="End time in ISO format (YYYY-MM-DDTHH:MM:SS)."
+        None, description="Ending time of the queried period in ISO format (YYYY-MM-DDTHH:MM:SS)."
     )
 
 
@@ -239,7 +275,10 @@ class WasWindowOpenedOnFloor(BaseTemplate):
 
     template_name: ClassVar[str] = "was_window_opened_on_floor"
     template_description: ClassVar[str] = (
-        "Checks if a window (contact sensor) was opened on a floor during a time period."
+        """
+        Checks if a window (contact sensor) was opened on a <floor> during a time period.
+        Example: 'Was a window opened on the <floor> during the last week of <month> <year>?'
+        """
     )
 
     floor: Optional[FloorID] = Field(
@@ -247,10 +286,10 @@ class WasWindowOpenedOnFloor(BaseTemplate):
         description="The name of the floor to query in format VL_floor_<number> (e.g., VL_floor_7).",
     )
     min_time: Optional[Timestamp] = Field(
-        None, description="Start time in ISO format (YYYY-MM-DDTHH:MM:SS)."
+        None, description="Starting time of the queried period in ISO format (YYYY-MM-DDTHH:MM:SS)."
     )
     max_time: Optional[Timestamp] = Field(
-        None, description="End time in ISO format (YYYY-MM-DDTHH:MM:SS)."
+        None, description="Ending time of the queried period in ISO format (YYYY-MM-DDTHH:MM:SS)."
     )
 
 
@@ -259,7 +298,11 @@ class CountWindowOpeningsOnFloor(BaseTemplate):
 
     template_name: ClassVar[str] = "count_window_openings_on_floor"
     template_description: ClassVar[str] = (
-        "Counts how many times a window (contact sensor) was opened on a floor during a time period."
+        """
+        Counts how many times a window (contact sensor) was opened on a floor during a time period.
+        Example: 'How many times was a window opened on the <floor> during <month> of <year>?'
+        Example: 'Count the number of window openings on the <floor> in the last week.'
+        """
     )
 
     floor: Optional[FloorID] = Field(
@@ -267,10 +310,10 @@ class CountWindowOpeningsOnFloor(BaseTemplate):
         description="The name of the floor to query in format VL_floor_<number> (e.g., VL_floor_7).",
     )
     min_time: Optional[Timestamp] = Field(
-        None, description="Start time in ISO format (YYYY-MM-DDTHH:MM:SS)."
+        None, description="Starting time of the queried period in ISO format (YYYY-MM-DDTHH:MM:SS)."
     )
     max_time: Optional[Timestamp] = Field(
-        None, description="End time in ISO format (YYYY-MM-DDTHH:MM:SS)."
+        None, description="Ending time of the queried period in ISO format (YYYY-MM-DDTHH:MM:SS)."
     )
 
 
@@ -279,12 +322,16 @@ class ListDeviceProperties(BaseTemplate):
 
     template_name: ClassVar[str] = "list_device_properties"
     template_description: ClassVar[str] = (
-        "Lists all measurement properties a given device is capable of, returned as a single comma-separated string."
+        """
+        Lists (enumerates) all measurement properties a given device is capable of, returned as a single comma-separated string.
+        Example: 'What properties does the <device> support?'
+        Example: 'What measurements can I get from <device>?'
+        """
     )
 
     device: Optional[DeviceID] = Field(
         None,
-        description="The name of the device to query, possibe formats are R5_<number>, SmartSense_Multi_Sensor_<number>, Zigbee_Thermostat_<number>.",
+        description="The name of the device to query, possible formats are R5_<number>, SmartSense_Multi_Sensor_<number>, Zigbee_Thermostat_<number>.",
     )
 
 class ListDevicesAndTypesOnFloor(BaseTemplate):
@@ -292,7 +339,11 @@ class ListDevicesAndTypesOnFloor(BaseTemplate):
     # TODO: mark this template as multiple-row output, and handle differently
     template_name: ClassVar[str] = "list_devices_and_types_on_floor"
     template_description: ClassVar[str] = (
-        "Lists all devices and their types located on a specific floor."
+        """
+        Lists all devices and their types located on a specific floor.
+        Example: 'What devices are located on the <floor>?'
+        Example: 'List all devices and their types on the <floor>.'
+        """
     )
 
     floor: Optional[FloorID] = Field(

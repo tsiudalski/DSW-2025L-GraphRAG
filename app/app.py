@@ -29,6 +29,7 @@ FUSEKI_PORT = os.getenv('FUSEKI_PORT', '3030')
 FUSEKI_ENDPOINT = os.getenv('FUSEKI_ENDPOINT', 'demo7floor')
 OLLAMA_HOST = os.getenv('OLLAMA_HOST', 'localhost')
 OLLAMA_PORT = os.getenv('OLLAMA_PORT', '11434')
+OLLAMA_MODEL = os.getenv('OLLAMA_MODEL', 'llama2')
 
 # --- Initialization of SPARQLQueryProcessor --- #
 # This must be done only once per app run, usually outside of functions or in st.session_state
@@ -77,11 +78,13 @@ def main():
     if 'processor' not in st.session_state:
         fuseki_url = f'http://{FUSEKI_HOST}:{FUSEKI_PORT}/{FUSEKI_ENDPOINT}/query'
         ollama_url = f'http://{OLLAMA_HOST}:{OLLAMA_PORT}'
+        ollama_model = OLLAMA_MODEL
         print(fuseki_url)
         st.session_state.processor = SPARQLQueryProcessor(
             templates_dir=os.path.join(app_dir, 'templates'),
             fuseki_endpoint=fuseki_url,
-            ollama_host=ollama_url
+            ollama_host=ollama_url,
+            ollama_model=ollama_model
         )
 
     # Get available datasets

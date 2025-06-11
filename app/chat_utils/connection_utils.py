@@ -1,12 +1,12 @@
 import requests
 
-def test_ollama_connection(ollama_url):
+def test_ollama_connection(ollama_url, ollama_model):
     """Test connection to Ollama service"""
     try:
         response = requests.post(
             f"{ollama_url}/api/generate",
             json={
-                "model": "llama2",
+                "model": ollama_model,
                 "prompt": "test",
                 "stream": False
             },
