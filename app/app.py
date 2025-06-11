@@ -187,7 +187,7 @@ Try asking a question about your selected dataset!"""
                             template = processor.env.get_template(parameterized_template.template_path)
                             sparql_query = template.render(**parameters)
                             with st.expander("View SPARQL Query", expanded=False):
-                                st.code(sparql_query, language="sparql")
+                                st.code(f"# Template: {parameterized_template.template_name}\n{sparql_query}", language="sparql")
                 
                 # Then get the actual response
                 response = get_basic_response(prompt, selected_dataset, response_format, show_sparql, show_table, table_limit)
