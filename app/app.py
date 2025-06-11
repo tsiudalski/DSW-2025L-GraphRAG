@@ -175,6 +175,21 @@ Try asking a question about your selected dataset!"""
         # Generate and display assistant response
         with st.chat_message("assistant"):
             with st.spinner("Thinking..."):
+                # First get the SPARQL query if needed
+                if show_sparql:
+                    processor = st.session_state.processor
+                    template = processor.find_best_template(prompt)
+                    if template:
+                        parameters = processor.extract_parameters(prompt, template)
+                        parameters = {key: str(value) for key, value in parameters.items()}
+                        parameterized_template, errors, missing = template.create_and_validate(parameters)
+                        if parameterized_template:
+                            template = processor.env.get_template(parameterized_template.template_path)
+                            sparql_query = template.render(**parameters)
+                            with st.expander("View SPARQL Query", expanded=False):
+                                st.code(sparql_query, language="sparql")
+                
+                # Then get the actual response
                 response = get_basic_response(prompt, selected_dataset, response_format, show_sparql, show_table, table_limit)
                 st.markdown(response)
                 st.session_state.messages.append({"role": "assistant", "content": response})
