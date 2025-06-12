@@ -21,6 +21,9 @@ services:
       - ollama_data:/root/.ollama
     tty: true
     restart: unless-stopped
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
 
   app:
     build:

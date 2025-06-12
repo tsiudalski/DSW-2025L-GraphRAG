@@ -168,16 +168,19 @@ Try asking a question about your selected dataset!"""
             with st.spinner("Thinking..."):
                 processor = st.session_state.processor
                 template = processor.find_best_template(prompt)
+                print(f"Template: {template.template_name}")
                 if template:
                     parameters = processor.extract_parameters(prompt, template)
                     parameters = {key: str(value) for key, value in parameters.items()}
+                    print(f"Params: {parameters}")
                     parameterized_template, errors, missing = template.create_and_validate(parameters)
                     
                     if parameterized_template:
                         # Get the SPARQL query if needed
                         if show_sparql:
                             template = processor.env.get_template(parameterized_template.template_path)
-                            sparql_query = template.render(**parameters)
+                            validated_parameters = parameterized_template.model_dump()
+                            sparql_query = template.render(**validated_parameters)
                             with st.expander("View SPARQL Query", expanded=False):
                                 st.code(f"# Template: {parameterized_template.template_name}\n{sparql_query}", language="sparql")
                         
