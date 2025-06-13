@@ -77,7 +77,7 @@ class SPARQLQueryProcessor:
         
         return best_template
     
-    def _call_ollama(self, prompt: str, max_retries: int = 3, timeout: int = 60) -> str:
+    def _call_ollama(self, prompt: str, max_retries: int = 3, timeout: int = 60, stream: bool = False) -> str:
         """Make a direct HTTP call to Ollama API with retries."""
         for attempt in range(max_retries):
             try:
@@ -86,12 +86,15 @@ class SPARQLQueryProcessor:
                     json={
                         "model": "llama2", # FIXME:  not to be hardcoded!!!
                         "prompt": prompt,
-                        "stream": False
+                        "stream": stream
                     },
-                    timeout=timeout
+                    timeout=timeout,
+                    stream=stream
                 )
                 response.raise_for_status()
-                return response.json()['response']
+                if not stream:
+                    return response.json()['response']
+                return response
             except requests.exceptions.Timeout:
                 if attempt < max_retries - 1:
                     print(f"Timeout occurred, retrying... (attempt {attempt + 1}/{max_retries})")
@@ -182,6 +185,33 @@ Answer:"""
         except Exception as e:
             print(f"Error generating response: {str(e)}")
             return "Error generating response. Please check if Ollama is running."
+    
+    def generate_response_stream(self, query_results: List[Dict], user_query: str):
+        """Generate a natural language response using Ollama with streaming."""
+        prompt = f"""You are a helpful assistant that provides clear and concise answers based on query results.
+
+User question: {user_query}
+
+Query results: {json.dumps(query_results, indent=2)}
+
+Instructions:
+1. Provide a direct answer to the user's question
+2. Use the query results to support your answer
+3. Keep the response concise and clear
+4. If there are no results, say so clearly
+
+Answer:"""
+        
+        try:
+            response = self._call_ollama(prompt, stream=True)
+            for line in response.iter_lines():
+                if line:
+                    json_response = json.loads(line)
+                    if 'response' in json_response:
+                        yield json_response['response']
+        except Exception as e:
+            print(f"Error generating response: {str(e)}")
+            yield "Error generating response. Please check if Ollama is running."
     
     def process_query(self, user_query: str) -> str:
         """Process a user query end-to-end."""

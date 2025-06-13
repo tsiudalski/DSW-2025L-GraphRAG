@@ -235,9 +235,17 @@ Try asking a question about your selected dataset!"""
                                         )
                             
                             # Generate and show the response
-                            response = processor.generate_response(results, prompt)
-                            st.markdown(response)
-                            st.session_state.messages.append({"role": "assistant", "content": response})
+                            response_placeholder = st.empty()
+                            full_response = ""
+                            
+                            # Stream the response from Ollama
+                            for chunk in processor.generate_response_stream(results, prompt):
+                                full_response += chunk
+                                response_placeholder.markdown(full_response + "▌")
+                            
+                            # Show final response without the cursor
+                            response_placeholder.markdown(full_response)
+                            st.session_state.messages.append({"role": "assistant", "content": full_response})
                             
                         except Exception as e:
                             error_msg = f"Error processing your query: {str(e)}"
