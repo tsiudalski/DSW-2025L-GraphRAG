@@ -1,0 +1,122 @@
+{
+    "templates": [
+        {
+            "id": "avg_measurement_by_device",
+            "file": "avg_measurement_by_device.rq.j2",
+            "description": "Calculates the average of a specific numeric measurement for a single device over a given time period.",
+            "params": {
+                "device": "The name of the device to query, possibe formats are R5_<number>, SmartSense_Multi_Sensor_<number>, Zigbee_Thermostat_<number>.",
+                "property_type": "The URI of the measurement type to average, possibe values are: ic:BatteryLevel, ic:CO2Level, ic:Contact, ic:DeviceStatus, ic:RunningTime, ic:thermostatHeatingSetpoint, saref:Humidity, saref:Motion, saref:Occupancy, saref:Power, saref:Temperature.",
+                "min_time": "Start time in ISO format (YYYY-MM-DDTHH:MM:SS).",
+                "max_time": "End time in ISO format (YYYY-MM-DDTHH:MM:SS)."
+            }
+        },
+        {
+            "id": "avg_measurement_by_floor",
+            "file": "avg_measurement_by_floor.rq.j2",
+            "description": "Calculates the average of a specific numeric measurement for all devices on a given floor over a given time period.",
+            "params": {
+                "floor": "The name of the floor to query in format VL_floor_<number> (e.g., VL_floor_7).",
+                "property_type": "The URI of the measurement type to average, possibe values are: ic:BatteryLevel, ic:CO2Level, ic:Contact, ic:DeviceStatus, ic:RunningTime, ic:thermostatHeatingSetpoint, saref:Humidity, saref:Motion, saref:Occupancy, saref:Power, saref:Temperature.",
+                "min_time": "Start time in ISO format (YYYY-MM-DDTHH:MM:SS).",
+                "max_time": "End time in ISO format (YYYY-MM-DDTHH:MM:SS)."
+            }
+        },
+        {
+            "id": "count_type_on_floor",
+            "file": "count_type_on_floor.rq.j2",
+            "description": "Counts the number of devices of a specific model/type that are located on a specific floor.",
+            "params": {
+                "floor": "The name of the floor to query in format VL_floor_<number> (e.g., VL_floor_7).",
+                "device_type": "The string representing the device model/type, possible values are: Airwits, SmartThings, Sensor Hub."
+            }
+        },
+        {
+            "id": "count_devices_on_floor",
+            "file": "count_devices_on_floor.rq.j2",
+            "description": "Counts the total number of unique devices located on a specific floor.",
+            "params": {
+                "floor": "The name of the floor to query in format VL_floor_<number> (e.g., VL_floor_7)."
+            }
+        },
+        {
+            "id": "count_rooms_on_floor",
+            "file": "count_rooms_on_floor.rq.j2",
+            "description": "Counts the total number of unique rooms located on a specific floor.",
+            "params": {
+                "floor": "The name of the floor to query in format VL_floor_<number> (e.g., VL_floor_7)."
+            }
+        },
+        {
+            "id": "latest_measurement_from_device",
+            "file": "latest_measurement_from_device.rq.j2",
+            "description": "Fetches the single most recent value of a specific numeric measurement from a single device.",
+            "params": {
+                "device": "The name of the device to query, possibe formats are R5_<number>, SmartSense_Multi_Sensor_<number>, Zigbee_Thermostat_<number>.",
+                "property_type": "The URI of the measurement type to average, possibe values are: ic:BatteryLevel, ic:CO2Level, ic:Contact, ic:DeviceStatus, ic:RunningTime, ic:thermostatHeatingSetpoint, saref:Humidity, saref:Motion, saref:Occupancy, saref:Power, saref:Temperature."
+            }
+        },
+        {
+            "id": "max_measurement_in_building",
+            "file": "max_measurement_in_building.rq.j2",
+            "description": "Finds the highest value ever recorded for a specific numeric measurement across all devices.",
+            "params": {
+                "property_type": "The URI of the measurement type to average, possibe values are: ic:BatteryLevel, ic:CO2Level, ic:Contact, ic:DeviceStatus, ic:RunningTime, ic:thermostatHeatingSetpoint, saref:Humidity, saref:Motion, saref:Occupancy, saref:Power, saref:Temperature."
+            }
+        },
+        {
+            "id": "min_measurement_in_building",
+            "file": "min_measurement_in_building.rq.j2",
+            "description": "Finds the lowest value ever recorded for a specific numeric measurement across all devices.",
+            "params": {
+                "property_type": "The URI of the measurement type to average, possibe values are: ic:BatteryLevel, ic:CO2Level, ic:Contact, ic:DeviceStatus, ic:RunningTime, ic:thermostatHeatingSetpoint, saref:Humidity, saref:Motion, saref:Occupancy, saref:Power, saref:Temperature."
+            }
+        },
+        {
+            "id": "count_devices_by_status",
+            "file": "count_devices_by_status.rq.j2",
+            "description": "Counts the number of unique devices that reported a specific status within a given time period.",
+            "params": {
+                "status": "The device status to count ('active' or 'inactive').",
+                "min_time": "Start time in ISO format (YYYY-MM-DDTHH:MM:SS).",
+                "max_time": "End time in ISO format (YYYY-MM-DDTHH:MM:SS)."
+            }
+        },
+        {
+            "id": "was_window_opened_on_floor",
+            "file": "was_window_opened_on_floor.rq.j2",
+            "description": "Checks if a window (contact sensor) was opened on a floor during a time period.",
+            "params": {
+                "floor": "The name of the floor to query in format VL_floor_<number> (e.g., VL_floor_7).",
+                "min_time": "Start time in ISO format (YYYY-MM-DDTHH:MM:SS).",
+                "max_time": "End time in ISO format (YYYY-MM-DDTHH:MM:SS)."
+            }
+        },
+        {
+            "id": "count_window_openings_on_floor",
+            "file": "count_window_openings_on_floor.rq.j2",
+            "description": "Counts how many times a window (contact sensor) was opened on a floor during a time period.",
+            "params": {
+                "floor": "The name of the floor to query in format VL_floor_<number> (e.g., VL_floor_7).",
+                "min_time": "Start time in ISO format (YYYY-MM-DDTHH:MM:SS).",
+                "max_time": "End time in ISO format (YYYY-MM-DDTHH:MM:SS)."
+            }
+        },
+        {
+            "id": "list_device_properties",
+            "file": "list_device_properties.rq.j2",
+            "description": "Lists all measurement properties a given device is capable of, returned as a single comma-separated string.",
+            "params": {
+                "device": "The name of the device to query, possibe formats are R5_<number>, SmartSense_Multi_Sensor_<number>, Zigbee_Thermostat_<number>."
+            }
+        },
+        {
+            "id": "list_devices_and_types_on_floor",
+            "file": "list_devices_and_types_on_floor.rq.j2",
+            "description": "Lists all devices and their types located on a specific floor.",
+            "params": {
+                "floor": "The name of the floor to query in format VL_floor_<number> (e.g., VL_floor_7)."
+            }
+        }
+    ]
+}

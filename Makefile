@@ -34,6 +34,14 @@ logs:  ## Show logs from Fuseki and Ollama containers
 pull-model:  ## Pull model via Ollama (default: llama2)
 	docker exec -it ollama ollama pull $(OLLAMA_MODEL)
 
+# Main Utils
+run-webapp:  ## Start the web application
+	@echo "Starting Streamlit UI..."
+	poetry run streamlit run --server.fileWatcherType none $(UI_DIR)/app.py
+
+generate-metadata:  ## Generate JSON template_metadata for documentation purposes
+	poetry run python scripts/generate_template_metadata.py.
+
 # Fuseki operations
 fuseki-create-dataset:
 	@if [ -z "$(DATASET_NAME)" ]; then \
@@ -84,6 +92,7 @@ fuseki-list-datasets:
 	@echo "Listing all datasets in Fuseki..."
 	@curl -s -H "Accept: application/json" http://$(FUSEKI_HOST):$(FUSEKI_PORT)/$$/datasets
 
+# Testing Commands
 test-fuseki:  ## Run test query on Fuseki endpoint
 	curl -X POST http://$(FUSEKI_HOST):$(FUSEKI_PORT)/$(FUSEKI_ENDPOINT)/sparql \
 		--data-urlencode 'query=SELECT * WHERE { ?s ?p ?o } LIMIT 10' \
@@ -92,6 +101,9 @@ test-fuseki:  ## Run test query on Fuseki endpoint
 test-ollama:  ## Send test prompt to Ollama model
 	curl -X POST http://$(OLLAMA_HOST):$(OLLAMA_PORT)/api/generate \
 		-d '{"model": "$(OLLAMA_MODEL)", "prompt": "Hello?", "stream": false}'
+
+test:  # Runs the testcases and generates test report
+	pytest tests/test_all.py -v --html=test_report.html --self-contained-html
 
 version-check:  ## Print current setup config variables
 	@echo "OLLAMA HOST:     $(OLLAMA_HOST)"
@@ -103,9 +115,4 @@ version-check:  ## Print current setup config variables
 	@echo "DATASET DIR:     $(DATASET_DIR)"
 	@echo "DATASET NAME:    $(DATASET_NAME)"
 
-run-webapp:  ## Run the Streamlit UI
-	@echo "Starting Streamlit UI..."
-	poetry run streamlit run --server.fileWatcherType none $(UI_DIR)/app.py
 
-test:
-	pytest tests/test_all.py -v --html=report.html --self-contained-html
