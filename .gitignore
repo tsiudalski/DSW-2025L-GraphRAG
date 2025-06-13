@@ -195,7 +195,7 @@ ENV/
 *.swo
 
 # Data directory
-app/data/*
+# app/data/*
 
 # Logs
 *.log
