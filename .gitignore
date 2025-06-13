@@ -203,3 +203,4 @@ ENV/
 .python-version
 OfficeGraph
 datasets
+test_report.html
