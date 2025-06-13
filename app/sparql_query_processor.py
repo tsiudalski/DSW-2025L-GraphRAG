@@ -7,6 +7,10 @@ import numpy as np
 import requests
 from jinja2 import Environment, FileSystemLoader
 from sentence_transformers import SentenceTransformer
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 try:
     from app.models import TEMPLATE_REGISTRY  # for tests
@@ -23,8 +27,9 @@ class SPARQLQueryProcessor:
         self.ollama_host = ollama_host
         self.env = Environment(loader=FileSystemLoader(templates_dir))
         
-        # Initialize embedding model with specific model name
-        self.embedding_model = SentenceTransformer('mixedbread-ai/mxbai-embed-large-v1') # all-MiniLM-L6-v2
+        # Initialize embedding model with specific model name from env or default
+        self.embedding_model_name = os.getenv('EMBEDDING_MODEL', 'mixedbread-ai/mxbai-embed-large-v1')
+        self.embedding_model = SentenceTransformer(self.embedding_model_name)
         
         # Load or compute template embeddings
         data_dir = os.path.join(os.path.dirname(templates_dir), 'data')
@@ -88,7 +93,7 @@ class SPARQLQueryProcessor:
                 response = requests.post(
                     f"{self.ollama_host}/api/generate",
                     json={
-                        "model": "llama2", # FIXME:  not to be hardcoded!!!
+                        "model": os.getenv('OLLAMA_MODEL', 'llama2'), # Read from environment variable
                         "prompt": prompt,
                         "stream": stream
                     },
@@ -155,7 +160,7 @@ Instructions:
         print("------------------------\n")
         
         # Use the /sparql endpoint instead of /query
-        sparql_endpoint = self.fuseki_endpoint.replace('/query', '/sparql')
+        sparql_endpoint = self.fuseki_endpoint # Removed .replace('/query', '/sparql') as it's already /sparql
         
         response = requests.get(
             sparql_endpoint,
