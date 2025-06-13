@@ -111,6 +111,13 @@ def main():
             help="Display the generated SPARQL query in the response"
         )
         
+        if show_sparql:
+            show_prefixes = st.checkbox(
+                "Show PREFIX Declarations",
+                value=False,
+                help="Include PREFIX declarations in the displayed SPARQL query"
+            )
+        
         show_table = st.checkbox(
             "View Output Table",
             value=False,
@@ -181,8 +188,21 @@ Try asking a question about your selected dataset!"""
                             template = processor.env.get_template(parameterized_template.template_path)
                             validated_parameters = parameterized_template.model_dump()
                             sparql_query = template.render(**validated_parameters)
+                            # Remove PREFIX declarations and empty lines from the query if not showing prefixes
+                            if not show_prefixes:
+                                query_without_prefixes = '\n'.join(
+                                    line for line in sparql_query.split('\n')
+                                    if not line.strip().startswith('PREFIX') and line.strip()
+                                )
+                            else:
+                                # Split query into prefixes and main query
+                                lines = sparql_query.split('\n')
+                                prefix_lines = [line for line in lines if line.strip().startswith('PREFIX')]
+                                query_lines = [line for line in lines if not line.strip().startswith('PREFIX') and line.strip()]
+                                # Join with an extra blank line between prefixes and query
+                                query_without_prefixes = '\n'.join(prefix_lines) + '\n\n' + '\n'.join(query_lines)
                             with st.expander("View SPARQL Query", expanded=False):
-                                st.code(f"# Template: {parameterized_template.template_name}\n{sparql_query}", language="sparql")
+                                st.code(f"# Template: {parameterized_template.template_name}\n{query_without_prefixes}", language="sparql")
                         
                         # Execute query and get results
                         try:
