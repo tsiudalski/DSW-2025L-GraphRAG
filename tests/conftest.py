@@ -49,7 +49,7 @@ def pytest_html_results_summary(prefix, summary, postfix):
     
     accuracy_section = f"""
     <div class="accuracy-summary">
-        <h2 style="font-size: 1.2em; color: #444; margin-bottom: 10px;">Key Metrics</h2>
+        <h3>Key Metrics</h3>
         <table>
             <tr>
                 <th>Component</th>
