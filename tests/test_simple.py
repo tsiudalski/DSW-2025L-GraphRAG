@@ -31,10 +31,6 @@ def test_services():
     except requests.exceptions.ConnectionError:
         pytest.fail("Ollama service is not running. Please start it with 'docker-compose up -d ollama'")
 
-def test_basic_math():
-    """A very basic test to ensure pytest is working."""
-    assert 1 + 1 == 2, "Basic math is broken"
-
 # Load test cases
 with open(os.path.join(os.path.dirname(__file__), 'test_cases.json')) as f:
     TEST_CASES = json.load(f)['test_cases']
