@@ -10,6 +10,8 @@ template_tests_passed = 0
 template_tests_total = 0
 param_tests_passed = 0
 param_tests_total = 0
+sparql_tests_passed = 0
+sparql_tests_total = 0
 
 def test_services():
     """Test if services are running."""
@@ -112,4 +114,45 @@ class TestParameterExtraction:
             accuracy = (param_tests_passed / param_tests_total) * 100
             print("\nParameter Extraction Summary:")
             print(f"Passed: {param_tests_passed}/{param_tests_total} tests")
+            print(f"Accuracy: {accuracy:.1f}%")
+
+class TestSPARQLQueryExecution:
+    @pytest.mark.parametrize("test_case", TEST_CASES, ids=[tc['id'] for tc in TEST_CASES])
+    def test_sparql_query_execution(self, processor, test_case):
+        """Test if the SPARQL query execution result matches the expected result."""
+        global sparql_tests_passed, sparql_tests_total
+        
+        # Skip if no expected result is provided for this test case
+        if "expected_result" not in test_case:
+            pytest.skip(f"No expected_result provided for {test_case['id']}. Skipping SPARQL query execution test.")
+
+        try:
+            # 1. Get the expected template class from TEMPLATE_REGISTRY
+            template_class = TEMPLATE_REGISTRY.get(test_case['expected_template'])
+            assert template_class is not None, f"Template class not found: {test_case['expected_template']}"
+
+            # 2. Create a parameterized template instance using expected_params
+            # This assumes parameters are already validated as per the test suite's premise
+            parameterized_template = template_class(**test_case['expected_params'])
+            
+            # 3. Execute the SPARQL query using the processor
+            actual_result = processor.execute_query(parameterized_template)
+            
+            # 4. Compare actual result with expected result (full structure comparison)
+            assert actual_result == test_case['expected_result'], \
+                f"SPARQL query result mismatch for {test_case['id']}. Expected {test_case['expected_result']}, got {actual_result}"
+            
+            sparql_tests_passed += 1
+        except AssertionError:
+            raise
+        finally:
+            sparql_tests_total += 1
+            print(f"✓ SPARQL Execution: {test_case['id']}" if sparql_tests_passed == sparql_tests_total else f"✗ SPARQL Execution: {test_case['id']}")
+
+    def teardown_class(self):
+        """Print summary after all SPARQL query execution tests are done."""
+        if sparql_tests_total > 0:
+            accuracy = (sparql_tests_passed / sparql_tests_total) * 100
+            print("\nSPARQL Query Execution Summary:")
+            print(f"Passed: {sparql_tests_passed}/{sparql_tests_total} tests")
             print(f"Accuracy: {accuracy:.1f}%") 

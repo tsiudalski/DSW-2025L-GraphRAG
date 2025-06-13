@@ -10,7 +10,15 @@
         "min_time": "2022-05-01T00:00:00",
         "max_time": "2022-05-07T23:59:59"
       },
-      "expected_result": "21.38816"
+      "expected_result": [
+        {
+          "result": {
+            "type": "literal",
+            "datatype": "http://www.w3.org/2001/XMLSchema#float",
+            "value": "21.38816"
+          }
+        }
+      ]
     },
     {
       "id": "TC_002_avg_humidity_for_floor_month",
@@ -22,7 +30,15 @@
         "min_time": "2022-04-01T00:00:00",
         "max_time": "2022-04-30T23:59:59"
       },
-      "expected_result": "34.43899"
+      "expected_result": [
+        {
+          "result": {
+            "datatype": "http://www.w3.org/2001/XMLSchema#float",
+            "type": "literal",
+            "value": "34.43899"
+          }
+        }
+      ]
     },
     {
       "id": "TC_003_airwits_count_on_floor",
@@ -32,7 +48,15 @@
         "floor": "ic:VL_floor_7",
         "device_type": "Airwits"
       },
-      "expected_result": "5"
+      "expected_result": [
+        {
+          "result": {
+            "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+            "type": "literal",
+            "value": "5"
+          }
+        }
+      ]
     },
     {
       "id": "TC_004_sensors_count_on_floor",
@@ -41,7 +65,15 @@
       "expected_params": {
         "floor": "ic:VL_floor_7"
       },
-      "expected_result": "13"
+      "expected_result": [
+        {
+          "result": {
+            "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+            "type": "literal",
+            "value": "13"
+          }
+        }
+      ]
     },
     {
       "id": "TC_005_room_count_on_floor",
@@ -50,7 +82,15 @@
       "expected_params": {
         "floor": "ic:VL_floor_7"
       },
-      "expected_result": "42"
+      "expected_result": [
+        {
+          "result": {
+            "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+            "type": "literal",
+            "value": "42"
+          }
+        }
+      ]
     },
     {
       "id": "TC_006_last_reported_co2_specific_device",
@@ -60,7 +100,15 @@
         "device": "ic:R5_95",
         "property_type": "ic:CO2Level"
       },
-      "expected_result": "626.0"
+      "expected_result": [
+        {
+          "value": {
+            "datatype": "http://www.w3.org/2001/XMLSchema#float",
+            "type": "literal",
+            "value": "626.0"
+          }
+        }
+      ]
     },
     {
       "id": "TC_007_most_recent_batter_for_specific_device",
@@ -70,7 +118,15 @@
         "device": "ic:Zigbee_Thermostat_9",
         "property_type": "ic:BatteryLevel"
       },
-      "expected_result": "88.0"
+      "expected_result": [
+        {
+          "value": {
+            "datatype": "http://www.w3.org/2001/XMLSchema#float",
+            "type": "literal",
+            "value": "88.0"
+          }
+        }
+      ]
     },
     {
       "id": "TC_008_highest_temperature_in_building",
@@ -79,7 +135,15 @@
       "expected_params": {
         "property_type": "saref:Temperature"
       },
-      "expected_result": "44.2"
+      "expected_result": [
+        {
+          "result": {
+            "datatype": "http://www.w3.org/2001/XMLSchema#float",
+            "type": "literal",
+            "value": "44.2"
+          }
+        }
+      ]
     },
     {
       "id": "TC_009_lowest_humidity_reading",
@@ -88,7 +152,15 @@
       "expected_params": {
         "property_type": "saref:Humidity"
       },
-      "expected_result": "22.0"
+      "expected_result": [
+        {
+          "result": {
+            "datatype": "http://www.w3.org/2001/XMLSchema#float",
+            "type": "literal",
+            "value": "22.0"
+          }
+        }
+      ]
     },
     {
       "id": "TC_010_active_devices_in_month_year",
@@ -99,7 +171,15 @@
         "min_time": "2023-01-01T00:00:00",
         "max_time": "2023-01-31T23:59:59"
       },
-      "expected_result": "1"
+      "expected_result": [
+        {
+          "result": {
+            "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+            "type": "literal",
+            "value": "1"
+          }
+        }
+      ]
     },
     {
       "id": "TC_011_window_opening_on_floor_month_year",
@@ -110,7 +190,15 @@
         "min_time": "2022-09-01T00:00:00",
         "max_time": "2022-09-30T23:59:59"
       },
-      "expected_result": "2"
+      "expected_result": [
+        {
+          "result": {
+            "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+            "type": "literal",
+            "value": "2"
+          }
+        }
+      ]
     },
     {
       "id": "TC_012_measurement_list_for_sensor",
@@ -119,7 +207,14 @@
       "expected_params": {
         "device": "ic:SmartSense_Multi_Sensor_22"
       },
-      "expected_result": "BatteryLevel, Contact, DeviceStatus, Temperature"
+      "expected_result": [
+        {
+          "result": {
+            "type": "literal",
+            "value": "BatteryLevel, Contact, DeviceStatus, Temperature"
+          }
+        }
+      ]
     }
   ]
 }

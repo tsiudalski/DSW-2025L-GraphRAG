@@ -6,11 +6,13 @@ template_tests_passed = 0
 template_tests_total = 0
 param_tests_passed = 0
 param_tests_total = 0
+sparql_tests_passed = 0
+sparql_tests_total = 0
 
 def pytest_report_teststatus(report, config):
     """Track test results."""
     if report.when == "call":  # Only count the actual test call, not setup/teardown
-        global template_tests_passed, template_tests_total, param_tests_passed, param_tests_total
+        global template_tests_passed, template_tests_total, param_tests_passed, param_tests_total, sparql_tests_passed, sparql_tests_total
         
         if "TestTemplateSelection" in report.nodeid:
             template_tests_total += 1
@@ -20,6 +22,10 @@ def pytest_report_teststatus(report, config):
             param_tests_total += 1
             if report.outcome == "passed":
                 param_tests_passed += 1
+        elif "TestSPARQLQueryExecution" in report.nodeid:
+            sparql_tests_total += 1
+            if report.outcome == "passed":
+                sparql_tests_passed += 1
 
 def pytest_terminal_summary(terminalreporter, exitstatus, config):
     """Add accuracy metrics to the terminal summary."""
@@ -30,22 +36,28 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
     if param_tests_total > 0:
         param_accuracy = (param_tests_passed / param_tests_total) * 100
         terminalreporter.write_sep("=", f"Parameter Extraction Accuracy: {param_accuracy:.1f}%")
+    
+    if sparql_tests_total > 0:
+        sparql_accuracy = (sparql_tests_passed / sparql_tests_total) * 100
+        terminalreporter.write_sep("=", f"SPARQL Query Execution Accuracy: {sparql_accuracy:.1f}%")
 
 def pytest_html_report_title(report):
     """Add accuracy metrics to the report title."""
-    global template_tests_passed, template_tests_total, param_tests_passed, param_tests_total
+    global template_tests_passed, template_tests_total, param_tests_passed, param_tests_total, sparql_tests_passed, sparql_tests_total
     
     template_accuracy = (template_tests_passed / template_tests_total * 100) if template_tests_total > 0 else 0
     param_accuracy = (param_tests_passed / param_tests_total * 100) if param_tests_total > 0 else 0
+    sparql_accuracy = (sparql_tests_passed / sparql_tests_total * 100) if sparql_tests_total > 0 else 0
     
-    return f"Test Report - Template Selection: {template_accuracy:.1f}%, Parameter Extraction: {param_accuracy:.1f}%"
+    return f"Test Report - Template Selection: {template_accuracy:.1f}%, Parameter Extraction: {param_accuracy:.1f}%, SPARQL Execution: {sparql_accuracy:.1f}%"
 
 def pytest_html_results_summary(prefix, summary, postfix):
     """Add accuracy metrics to the results summary."""
-    global template_tests_passed, template_tests_total, param_tests_passed, param_tests_total
+    global template_tests_passed, template_tests_total, param_tests_passed, param_tests_total, sparql_tests_passed, sparql_tests_total
     
     template_accuracy = (template_tests_passed / template_tests_total * 100) if template_tests_total > 0 else 0
     param_accuracy = (param_tests_passed / param_tests_total * 100) if param_tests_total > 0 else 0
+    sparql_accuracy = (sparql_tests_passed / sparql_tests_total * 100) if sparql_tests_total > 0 else 0
     
     accuracy_section = f"""
     <div class="accuracy-summary">
@@ -65,6 +77,11 @@ def pytest_html_results_summary(prefix, summary, postfix):
                 <td>Parameter Extraction</td>
                 <td>{param_tests_passed}/{param_tests_total}</td>
                 <td>{param_accuracy:.1f}%</td>
+            </tr>
+            <tr>
+                <td>SPARQL Query Execution</td>
+                <td>{sparql_tests_passed}/{sparql_tests_total}</td>
+                <td>{sparql_accuracy:.1f}%</td>
             </tr>
         </table>
     </div>
