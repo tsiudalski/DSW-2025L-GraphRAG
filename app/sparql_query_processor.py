@@ -6,11 +6,15 @@ from typing import TYPE_CHECKING, Dict, List
 import numpy as np
 import requests
 from jinja2 import Environment, FileSystemLoader
-from models import TEMPLATE_REGISTRY
 from sentence_transformers import SentenceTransformer
 
+try:
+    from app.models import TEMPLATE_REGISTRY  # for tests
+except ImportError:
+    from models import TEMPLATE_REGISTRY  # for app
+
 if TYPE_CHECKING:
-    from models.templates import BaseTemplate
+    from app.models.templates import BaseTemplate
 
 
 class SPARQLQueryProcessor:
