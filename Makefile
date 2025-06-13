@@ -109,3 +109,6 @@ run-webapp:  ## Run the Streamlit UI
 
 test:
 	pytest tests/test_all.py -v --html=report.html --self-contained-html
+
+generate-metadata:
+	poetry run python scripts/generate_template_metadata.py.
