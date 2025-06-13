@@ -1,16 +1,13 @@
 import requests
 
+
 def test_ollama_connection(ollama_url):
     """Test connection to Ollama service"""
     try:
         response = requests.post(
             f"{ollama_url}/api/generate",
-            json={
-                "model": "llama2",
-                "prompt": "test",
-                "stream": False
-            },
-            timeout=200
+            json={"model": "llama2", "prompt": "test", "stream": False},
+            timeout=200,
         )
         response.raise_for_status()
         print("✅ Successfully connected to Ollama")
@@ -22,14 +19,15 @@ def test_ollama_connection(ollama_url):
             print("Please ensure Ollama is running and the port is correct")
         return False
 
+
 def test_fuseki_connection(fuseki_url):
     """Test connection to Fuseki service"""
     try:
         # Test with a simple SPARQL query
         response = requests.get(
-            fuseki_url.replace('/query', '/sparql'),
-            params={'query': 'SELECT * WHERE { ?s ?p ?o } LIMIT 1'},
-            headers={'Accept': 'application/sparql-results+json'},
+            fuseki_url.replace("/query", "/sparql"),
+            params={"query": "SELECT * WHERE { ?s ?p ?o } LIMIT 1"},
+            headers={"Accept": "application/sparql-results+json"},
             # timeout=5
         )
         response.raise_for_status()

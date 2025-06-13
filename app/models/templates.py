@@ -30,7 +30,7 @@ class BaseTemplate(BaseModel):
     def template_path(self) -> str:
         """Return the path to the template file."""
         return f"{self.template_name}.rq.j2"
-    
+
     @classmethod
     def get_fields(cls) -> List[str]:
         """Return a list of field names for the template."""
@@ -287,8 +287,10 @@ class ListDeviceProperties(BaseTemplate):
         description="The name of the device to query, possibe formats are R5_<number>, SmartSense_Multi_Sensor_<number>, Zigbee_Thermostat_<number>.",
     )
 
+
 class ListDevicesAndTypesOnFloor(BaseTemplate):
     """Lists all devices and their types located on a specific floor."""
+
     # TODO: mark this template as multiple-row output, and handle differently
     template_name: ClassVar[str] = "list_devices_and_types_on_floor"
     template_description: ClassVar[str] = (

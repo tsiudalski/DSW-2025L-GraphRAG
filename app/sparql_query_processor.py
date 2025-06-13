@@ -22,20 +22,27 @@ if TYPE_CHECKING:
 
 
 class SPARQLQueryProcessor:
-    def __init__(self, templates_dir: str, fuseki_endpoint: str, ollama_host: str = "http://localhost:11434"):
+    def __init__(
+        self,
+        templates_dir: str,
+        fuseki_endpoint: str,
+        ollama_host: str = "http://localhost:11434",
+    ):
         self.fuseki_endpoint = fuseki_endpoint
         self.ollama_host = ollama_host
         self.env = Environment(loader=FileSystemLoader(templates_dir))
-        
+
         # Initialize embedding model with specific model name from env or default
-        self.embedding_model_name = os.getenv('EMBEDDING_MODEL', 'mixedbread-ai/mxbai-embed-large-v1')
+        self.embedding_model_name = os.getenv(
+            "EMBEDDING_MODEL", "mixedbread-ai/mxbai-embed-large-v1"
+        )
         self.embedding_model = SentenceTransformer(self.embedding_model_name)
-        
+
         # Load or compute template embeddings
-        data_dir = os.path.join(os.path.dirname(templates_dir), 'data')
-        self.embeddings_file = os.path.join(data_dir, 'template_embeddings.json')
+        data_dir = os.path.join(os.path.dirname(templates_dir), "data")
+        self.embeddings_file = os.path.join(data_dir, "template_embeddings.json")
         self.template_embeddings = self._load_or_compute_embeddings()
-    
+
     def _load_or_compute_embeddings(self) -> Dict[str, np.ndarray]:
         """Load existing embeddings or compute new ones if not found."""
         # Always recompute embeddings to ensure consistency
@@ -47,35 +54,37 @@ class SPARQLQueryProcessor:
             with open(self.embeddings_file) as embedding_file:
                 embeddings = json.load(embedding_file)
         return embeddings
-    
+
     def _save_embeddings(self, embeddings: Dict[str, np.ndarray]) -> None:
         """Save embeddings to file."""
         # Convert numpy arrays to lists for JSON serialization
         embeddings_dict = {k: v.tolist() for k, v in embeddings.items()}
         os.makedirs(os.path.dirname(self.embeddings_file), exist_ok=True)
-        with open(self.embeddings_file, 'w') as f:
+        with open(self.embeddings_file, "w") as f:
             json.dump(embeddings_dict, f, indent=4)
-    
+
     def _compute_template_embeddings(self) -> Dict[str, np.ndarray]:
         """Compute embeddings for all template descriptions."""
         embeddings = {}
         for template in TEMPLATE_REGISTRY.values():
             description = template.template_description
             field_info = template.get_fields_info()
-            context = description + "\nFields:\n" + "\n".join(
-                f"- {k}: {v}" for k, v in field_info.items()
+            context = (
+                description
+                + "\nFields:\n"
+                + "\n".join(f"- {k}: {v}" for k, v in field_info.items())
             )
             embedding = self.embedding_model.encode(context)
             embeddings[template.template_name] = embedding
         return embeddings
-    
+
     def find_best_template(self, user_query: str) -> Dict:
         """Find the most relevant template for the user query."""
         query_embedding = self.embedding_model.encode(user_query)
-        
+
         best_score = -1
         best_template = None
-        
+
         for template_id, template_embedding in self.template_embeddings.items():
             similarity = np.dot(query_embedding, template_embedding) / (
                 np.linalg.norm(query_embedding) * np.linalg.norm(template_embedding)
@@ -83,38 +92,46 @@ class SPARQLQueryProcessor:
             if similarity > best_score:
                 best_score = similarity
                 best_template = TEMPLATE_REGISTRY[template_id]
-        
+
         return best_template
-    
-    def _call_ollama(self, prompt: str, max_retries: int = 3, timeout: int = 60, stream: bool = False) -> str:
+
+    def _call_ollama(
+        self, prompt: str, max_retries: int = 3, timeout: int = 60, stream: bool = False
+    ) -> str:
         """Make a direct HTTP call to Ollama API with retries."""
         for attempt in range(max_retries):
             try:
                 response = requests.post(
                     f"{self.ollama_host}/api/generate",
                     json={
-                        "model": os.getenv('OLLAMA_MODEL', 'llama2'), # Read from environment variable
+                        "model": os.getenv(
+                            "OLLAMA_MODEL", "llama2"
+                        ),  # Read from environment variable
                         "prompt": prompt,
-                        "stream": stream
+                        "stream": stream,
                     },
                     timeout=timeout,
-                    stream=stream
+                    stream=stream,
                 )
                 response.raise_for_status()
                 if not stream:
-                    return response.json()['response']
+                    return response.json()["response"]
                 return response
             except requests.exceptions.Timeout:
                 if attempt < max_retries - 1:
-                    print(f"Timeout occurred, retrying... (attempt {attempt + 1}/{max_retries})")
+                    print(
+                        f"Timeout occurred, retrying... (attempt {attempt + 1}/{max_retries})"
+                    )
                     time.sleep(2)  # Wait before retrying
                     continue
                 raise
             except Exception as e:
                 print(f"Error connecting to Ollama: {str(e)}")
-                print("Please ensure Ollama is running and accessible at the configured host")
+                print(
+                    "Please ensure Ollama is running and accessible at the configured host"
+                )
                 raise
-    
+
     def extract_parameters(self, user_query: str, template: Dict) -> Dict[str, str]:
         """Extract parameters from user query using Ollama."""
         prompt = f"""You are a parameter extraction assistant. Your task is to extract specific parameters from a user query and return them in JSON format.
@@ -137,42 +154,44 @@ Instructions:
             response = self._call_ollama(prompt)
             # Clean the response to ensure it's valid JSON
             response = response.strip()
-            if not response.startswith('{'):
-                response = response[response.find('{'):]
-            if not response.endswith('}'):
-                response = response[:response.rfind('}')+1]
+            if not response.startswith("{"):
+                response = response[response.find("{") :]
+            if not response.endswith("}"):
+                response = response[: response.rfind("}") + 1]
             return json.loads(response)
         except Exception as e:
             print(f"Error extracting parameters: {str(e)}")
             return {}
-    
+
     def execute_query(self, valid_template: "BaseTemplate") -> List[Dict]:
         """Execute the SPARQL query with the given parameters."""
         parameters = valid_template.model_dump()
         print(f"---TEMPLATE---\n{valid_template.template_name}")
         template = self.env.get_template(valid_template.template_path)
         query = template.render(**parameters)
-        
+
         # Print the populated SPARQL query
         print("\nGenerated SPARQL Query:")
         print("------------------------")
         print(query)
         print("------------------------\n")
-        
+
         # Use the /sparql endpoint instead of /query
-        sparql_endpoint = self.fuseki_endpoint # Removed .replace('/query', '/sparql') as it's already /sparql
-        
+        sparql_endpoint = (
+            self.fuseki_endpoint
+        )  # Removed .replace('/query', '/sparql') as it's already /sparql
+
         response = requests.get(
             sparql_endpoint,
-            params={'query': query},
-            headers={'Accept': 'application/sparql-results+json'}
+            params={"query": query},
+            headers={"Accept": "application/sparql-results+json"},
         )
-        
+
         if response.status_code == 200:
-            return response.json()['results']['bindings']
+            return response.json()["results"]["bindings"]
         else:
             raise Exception(f"Query execution failed: {response.text}")
-    
+
     def generate_response(self, query_results: List[Dict], user_query: str) -> str:
         """Generate a natural language response using Ollama."""
         prompt = f"""You are a helpful assistant that provides clear and concise answers based on query results.
@@ -188,13 +207,13 @@ Instructions:
 4. If there are no results, say so clearly
 
 Answer:"""
-        
+
         try:
             return self._call_ollama(prompt)
         except Exception as e:
             print(f"Error generating response: {str(e)}")
             return "Error generating response. Please check if Ollama is running."
-    
+
     def generate_response_stream(self, query_results: List[Dict], user_query: str):
         """Generate a natural language response using Ollama with streaming."""
         prompt = f"""You are a helpful assistant that provides clear and concise answers based on query results.
@@ -210,47 +229,56 @@ Instructions:
 4. If there are no results, say so clearly
 
 Answer:"""
-        
+
         try:
             response = self._call_ollama(prompt, stream=True)
             for line in response.iter_lines():
                 if line:
                     json_response = json.loads(line)
-                    if 'response' in json_response:
-                        yield json_response['response']
+                    if "response" in json_response:
+                        yield json_response["response"]
         except Exception as e:
             print(f"Error generating response: {str(e)}")
             yield "Error generating response. Please check if Ollama is running."
-    
+
     def process_query(self, user_query: str) -> str:
         """Process a user query end-to-end."""
         # Find the best matching template
         template = self.find_best_template(user_query)
         if not template:
-            return "CONTINUE", "I couldn't find a suitable query template for your question."
-        
+            return (
+                "CONTINUE",
+                "I couldn't find a suitable query template for your question.",
+            )
+
         # Extract parameters
         parameters = self.extract_parameters(user_query, template)
         parameters = {key: str(value) for key, value in parameters.items()}
         print(f"Extracted parameters: {parameters}")
-        parameterized_template, errors, missing = template.create_and_validate(parameters)
+        parameterized_template, errors, missing = template.create_and_validate(
+            parameters
+        )
         if parameterized_template:
             print(f"✅ Success! Instance created: {parameterized_template}")
         else:
             print("❌ Failure!")
 
-        msg = ''
+        msg = ""
         if missing:
-            missing_params_with_desc = [f"{k} - {v}" for k, v in template.get_fields_info().items() if k in missing]
+            missing_params_with_desc = [
+                f"{k} - {v}"
+                for k, v in template.get_fields_info().items()
+                if k in missing
+            ]
             msg += f"Please provide the following information: {', '.join(missing_params_with_desc)}\n"
         if errors:
-            errors_with_desc = '\n'.join(f'{k}: {v}' for k, v in errors.items())
+            errors_with_desc = "\n".join(f"{k}: {v}" for k, v in errors.items())
             msg += f"Some parameters are invalid: {parameters}\n"
             msg += f"Errors: {errors_with_desc}"
             msg += "\nPlease try to provide these parameters in a correct format."
         if msg:
             return "CONTINUE", msg
-        
+
         # Execute query
         try:
             results = self.execute_query(parameterized_template)
