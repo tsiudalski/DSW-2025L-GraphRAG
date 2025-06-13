@@ -3,10 +3,13 @@ import requests
 import json
 import os
 from app.sparql_query_processor import SPARQLQueryProcessor
+from app.models import TEMPLATE_REGISTRY
 
-# Global counter for template selection tests
+# Global counters for test results
 template_tests_passed = 0
 template_tests_total = 0
+param_tests_passed = 0
+param_tests_total = 0
 
 def test_services():
     """Test if services are running."""
@@ -40,7 +43,7 @@ def processor():
     return SPARQLQueryProcessor(
         templates_dir="app/templates",
         fuseki_endpoint="http://localhost:3030/demo7floor/sparql",
-        ollama_host=None  # Disable Ollama for template selection tests
+        ollama_host="http://localhost:11434"  # Enable Ollama for parameter extraction
     )
 
 class TestTemplateSelection:
@@ -67,4 +70,46 @@ class TestTemplateSelection:
             accuracy = (template_tests_passed / template_tests_total) * 100
             print("\nTemplate Selection Summary:")
             print(f"Passed: {template_tests_passed}/{template_tests_total} tests")
+            print(f"Accuracy: {accuracy:.1f}%")
+
+class TestParameterExtraction:
+    @pytest.mark.parametrize("test_case", TEST_CASES, ids=[tc['id'] for tc in TEST_CASES])
+    def test_parameter_extraction(self, processor, test_case):
+        """Test if parameters are correctly extracted and validated."""
+        global param_tests_passed, param_tests_total
+        
+        try:
+            # Get the expected template directly from registry
+            template = TEMPLATE_REGISTRY[test_case['expected_template']]
+            assert template is not None, f"Template not found: {test_case['expected_template']}"
+            
+            # Extract parameters
+            parameters = processor.extract_parameters(test_case['query'], template)
+            
+            # Create and validate template with parameters
+            parameterized_template, errors, missing = template.create_and_validate(parameters)
+            
+            # Check for validation errors
+            assert not errors, f"Validation errors for {test_case['id']}: {errors}"
+            assert not missing, f"Missing parameters for {test_case['id']}: {missing}"
+            
+            # Compare with expected parameters
+            for param_name, expected_value in test_case['expected_params'].items():
+                actual_value = getattr(parameterized_template, param_name)
+                assert str(actual_value) == str(expected_value), \
+                    f"Wrong value for parameter {param_name} in {test_case['id']}. Expected {expected_value}, got {actual_value}"
+            
+            param_tests_passed += 1
+        except AssertionError:
+            raise
+        finally:
+            param_tests_total += 1
+            print(f"✓ Parameter Extraction: {test_case['id']}" if param_tests_passed == param_tests_total else f"✗ Parameter Extraction: {test_case['id']}")
+
+    def teardown_class(self):
+        """Print summary after all parameter extraction tests are done."""
+        if param_tests_total > 0:
+            accuracy = (param_tests_passed / param_tests_total) * 100
+            print("\nParameter Extraction Summary:")
+            print(f"Passed: {param_tests_passed}/{param_tests_total} tests")
             print(f"Accuracy: {accuracy:.1f}%") 
