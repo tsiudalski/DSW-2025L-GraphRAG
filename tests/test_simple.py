@@ -4,6 +4,10 @@ import json
 import os
 from app.sparql_query_processor import SPARQLQueryProcessor
 
+# Global counter for template selection tests
+template_tests_passed = 0
+template_tests_total = 0
+
 def test_services():
     """Test if services are running."""
     # Check Fuseki
@@ -40,10 +44,27 @@ def processor():
     )
 
 class TestTemplateSelection:
-    @pytest.mark.parametrize("test_case", TEST_CASES)
+    @pytest.mark.parametrize("test_case", TEST_CASES, ids=[tc['id'] for tc in TEST_CASES])
     def test_template_selection(self, processor, test_case):
         """Test if the correct template is selected for each test case."""
-        template = processor.find_best_template(test_case['query'])
-        assert template is not None, f"Template selection failed for {test_case['id']}"
-        assert template.template_name == test_case['expected_template'], \
-            f"Wrong template selected for {test_case['id']}. Expected {test_case['expected_template']}, got {template.template_name}" 
+        global template_tests_passed, template_tests_total
+        
+        try:
+            template = processor.find_best_template(test_case['query'])
+            assert template is not None, f"Template selection failed for {test_case['id']}"
+            assert template.template_name == test_case['expected_template'], \
+                f"Wrong template selected for {test_case['id']}. Expected {test_case['expected_template']}, got {template.template_name}"
+            template_tests_passed += 1
+        except AssertionError:
+            raise
+        finally:
+            template_tests_total += 1
+            print(f"✓ Template Selection: {test_case['id']}" if template_tests_passed == template_tests_total else f"✗ Template Selection: {test_case['id']}")
+
+    def teardown_class(self):
+        """Print summary after all template selection tests are done."""
+        if template_tests_total > 0:
+            accuracy = (template_tests_passed / template_tests_total) * 100
+            print("\nTemplate Selection Summary:")
+            print(f"Passed: {template_tests_passed}/{template_tests_total} tests")
+            print(f"Accuracy: {accuracy:.1f}%") 
