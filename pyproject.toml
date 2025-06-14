@@ -18,6 +18,7 @@ python-dotenv = "^1.0.0"
 streamlit = "^1.45.1"
 pydantic = "^2.11.5"
 pytest = "^8.4.0"
+einops = "^0.8.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest-html = "^4.1.1"
