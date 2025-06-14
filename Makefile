@@ -22,7 +22,7 @@ logs:  ## Show logs from Fuseki and Ollama containers
 # Main Utils
 run-webapp:  ## Start the web application
 	@echo "Starting Streamlit UI..."
-	poetry run streamlit run --server.fileWatcherType none $(UI_DIR)/app.py
+	poetry run streamlit run --server.fileWatcherType none app/app.py
 
 build-template-docs: ## Generate app/data/template_metadata.json for documentation purposes
 	poetry run python scripts/generate_template_metadata.py.
