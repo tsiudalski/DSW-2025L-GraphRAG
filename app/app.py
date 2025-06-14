@@ -25,6 +25,10 @@ FUSEKI_PORT = os.getenv("FUSEKI_PORT", "3030")
 FUSEKI_ENDPOINT = os.getenv("FUSEKI_ENDPOINT", "demo7floor")
 OLLAMA_HOST = os.getenv("OLLAMA_HOST", "localhost")
 OLLAMA_PORT = os.getenv("OLLAMA_PORT", "11434")
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama2")
+EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL")
+VERSION = os.getenv("VERSION", "unknown")
+
 
 # --- Initialization of SPARQLQueryProcessor --- #
 # This must be done only once per app run, usually outside of functions or in st.session_state
@@ -98,6 +102,10 @@ def main():
 
     # Create options in the sidebar
     with st.sidebar:
+        st.badge(f"v{VERSION}", icon="🏷️", color="green")
+        st.badge(f"{OLLAMA_MODEL}", icon="🦙", color="blue")
+        st.badge(f"{EMBEDDING_MODEL}", icon="🧬", color="violet")
+
         st.header("📦 Dataset Selection")
         dataset_names = [get_dataset_name(ds) for ds in datasets]
         selected_dataset = st.selectbox(
