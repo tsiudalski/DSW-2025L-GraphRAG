@@ -3,29 +3,29 @@
         {
             "id": "avg_measurement_by_device",
             "file": "avg_measurement_by_device.rq.j2",
-            "description": "Calculates the average of a specific numeric measurement for a single device over a given time period.",
+            "description": "\n        Calculates the average (mean) of a specific numeric measurement for a given device (sensor) over a given time period.\n        Example: 'What was the average <measurement> on <device> during the first week of <month> <year>?'\n        Example: 'What was the average <measurement> level reported by <device> in the last month?'\n        ",
             "params": {
-                "device": "The name of the device to query, possibe formats are R5_<number>, SmartSense_Multi_Sensor_<number>, Zigbee_Thermostat_<number>.",
-                "property_type": "The URI of the measurement type to average, possibe values are: ic:BatteryLevel, ic:CO2Level, ic:Contact, ic:DeviceStatus, ic:RunningTime, ic:thermostatHeatingSetpoint, saref:Humidity, saref:Motion, saref:Occupancy, saref:Power, saref:Temperature.",
-                "min_time": "Start time in ISO format (YYYY-MM-DDTHH:MM:SS).",
-                "max_time": "End time in ISO format (YYYY-MM-DDTHH:MM:SS)."
+                "device": "The name of the device to query, possible formats are R5_<number>, SmartSense_Multi_Sensor_<number>, Zigbee_Thermostat_<number>.",
+                "property_type": "The URI identifier of the measurement type to average, possible values are: ic:BatteryLevel, ic:CO2Level, ic:Contact, ic:DeviceStatus, ic:RunningTime, ic:thermostatHeatingSetpoint, saref:Humidity, saref:Motion, saref:Occupancy, saref:Power, saref:Temperature.",
+                "min_time": "Starting time of the queried period in ISO format (YYYY-MM-DDTHH:MM:SS).",
+                "max_time": "Ending time of the queried period in ISO format (YYYY-MM-DDTHH:MM:SS)."
             }
         },
         {
             "id": "avg_measurement_by_floor",
             "file": "avg_measurement_by_floor.rq.j2",
-            "description": "Calculates the average of a specific numeric measurement for all devices on a given floor over a given time period.",
+            "description": "\n        Calculates the average (mean) of a specific numeric measurement for all devices on a given floor over a given time period.\n        Example: 'What was the average <measurement> level on the <floor> during the first week of <month> <year>?'\n        Example: 'What was the mean <measurement> level reported by devices on the <floor> in the last month?'\n        ",
             "params": {
                 "floor": "The name of the floor to query in format VL_floor_<number> (e.g., VL_floor_7).",
-                "property_type": "The URI of the measurement type to average, possibe values are: ic:BatteryLevel, ic:CO2Level, ic:Contact, ic:DeviceStatus, ic:RunningTime, ic:thermostatHeatingSetpoint, saref:Humidity, saref:Motion, saref:Occupancy, saref:Power, saref:Temperature.",
-                "min_time": "Start time in ISO format (YYYY-MM-DDTHH:MM:SS).",
-                "max_time": "End time in ISO format (YYYY-MM-DDTHH:MM:SS)."
+                "property_type": "The URI identifier of the measurement type to average, possible values are: ic:BatteryLevel, ic:CO2Level, ic:Contact, ic:DeviceStatus, ic:RunningTime, ic:thermostatHeatingSetpoint, saref:Humidity, saref:Motion, saref:Occupancy, saref:Power, saref:Temperature.",
+                "min_time": "Starting time of the queried period in ISO format (YYYY-MM-DDTHH:MM:SS).",
+                "max_time": "Ending time of the queried period in ISO format (YYYY-MM-DDTHH:MM:SS)."
             }
         },
         {
             "id": "count_type_on_floor",
             "file": "count_type_on_floor.rq.j2",
-            "description": "Counts the number of devices of a specific model/type that are located on a specific floor.",
+            "description": "\n        Counts the number of devices of a specific model/type that are located on a specific floor.\n        Example: 'How many <device_type> devices are located on the <floor>?'\n        Example: 'What is the total number of <device_type> devices on the <floor>?'\n        ",
             "params": {
                 "floor": "The name of the floor to query in format VL_floor_<number> (e.g., VL_floor_7).",
                 "device_type": "The string representing the device model/type, possible values are: Airwits, SmartThings, Sensor Hub."
@@ -34,7 +34,7 @@
         {
             "id": "count_devices_on_floor",
             "file": "count_devices_on_floor.rq.j2",
-            "description": "Counts the total number of unique devices located on a specific floor.",
+            "description": "\n        Counts the total number of unique devices located on a specific floor.\n        Example: 'How many devices are located on the <floor>?'\n        Example: 'What is the total number of devices on the <floor>?'\n        ",
             "params": {
                 "floor": "The name of the floor to query in format VL_floor_<number> (e.g., VL_floor_7)."
             }
@@ -42,7 +42,7 @@
         {
             "id": "count_rooms_on_floor",
             "file": "count_rooms_on_floor.rq.j2",
-            "description": "Counts the total number of unique rooms located on a specific floor.",
+            "description": "\n        Counts the total number of unique rooms located on a specific floor.\n        Example: 'How many rooms are located on the <floor>?'\n        Example: 'What is the total number of rooms on the <floor>?'\n        ",
             "params": {
                 "floor": "The name of the floor to query in format VL_floor_<number> (e.g., VL_floor_7)."
             }
@@ -50,70 +50,70 @@
         {
             "id": "latest_measurement_from_device",
             "file": "latest_measurement_from_device.rq.j2",
-            "description": "Fetches the single most recent value of a specific numeric measurement from a single device.",
+            "description": "\n        Fetches the last (latest, most recent) value of a specific numeric measurement made by a given device.\n        Example: 'What was the last reported <measurement> level from <device>?'\n        Example: 'What is the latest reading of <measurement> reported by <device>?'\n        ",
             "params": {
-                "device": "The name of the device to query, possibe formats are R5_<number>, SmartSense_Multi_Sensor_<number>, Zigbee_Thermostat_<number>.",
-                "property_type": "The URI of the measurement type to average, possibe values are: ic:BatteryLevel, ic:CO2Level, ic:Contact, ic:DeviceStatus, ic:RunningTime, ic:thermostatHeatingSetpoint, saref:Humidity, saref:Motion, saref:Occupancy, saref:Power, saref:Temperature."
+                "device": "The name of the device for which to fetch the last reported measurement, possible formats are R5_<number>, SmartSense_Multi_Sensor_<number>, Zigbee_Thermostat_<number>.",
+                "property_type": "The URI identifier of the measurement type to fetch, possible values are: ic:BatteryLevel, ic:CO2Level, ic:Contact, ic:DeviceStatus, ic:RunningTime, ic:thermostatHeatingSetpoint, saref:Humidity, saref:Motion, saref:Occupancy, saref:Power, saref:Temperature."
             }
         },
         {
             "id": "max_measurement_in_building",
             "file": "max_measurement_in_building.rq.j2",
-            "description": "Finds the highest value ever recorded for a specific numeric measurement across all devices.",
+            "description": "\n        Finds the highest (top, maximum) value ever recorded (in all history) for a specific numeric measurement across all devices.\n        Example: 'What was the highest <measurement> level ever recorded in the building?'\n        Example: 'What is the maximum <measurement> level ever reported by any device?'\n        ",
             "params": {
-                "property_type": "The URI of the measurement type to average, possibe values are: ic:BatteryLevel, ic:CO2Level, ic:Contact, ic:DeviceStatus, ic:RunningTime, ic:thermostatHeatingSetpoint, saref:Humidity, saref:Motion, saref:Occupancy, saref:Power, saref:Temperature."
+                "property_type": "The URI identifier of the measurement type to fetch, possible values are: ic:BatteryLevel, ic:CO2Level, ic:Contact, ic:DeviceStatus, ic:RunningTime, ic:thermostatHeatingSetpoint, saref:Humidity, saref:Motion, saref:Occupancy, saref:Power, saref:Temperature."
             }
         },
         {
             "id": "min_measurement_in_building",
             "file": "min_measurement_in_building.rq.j2",
-            "description": "Finds the lowest value ever recorded for a specific numeric measurement across all devices.",
+            "description": "\n        Finds the lowest (bottom, minimum) value ever recorded (in all history) for a specific numeric measurement across all devices.\n        Example: 'What was the lowest <measurement> level ever recorded in the building?'\n        Example: 'What is the minimum <measurement> level ever reported by any device?'\n        ",
             "params": {
-                "property_type": "The URI of the measurement type to average, possibe values are: ic:BatteryLevel, ic:CO2Level, ic:Contact, ic:DeviceStatus, ic:RunningTime, ic:thermostatHeatingSetpoint, saref:Humidity, saref:Motion, saref:Occupancy, saref:Power, saref:Temperature."
+                "property_type": "The URI identifier of the measurement type to fetch, possible values are: ic:BatteryLevel, ic:CO2Level, ic:Contact, ic:DeviceStatus, ic:RunningTime, ic:thermostatHeatingSetpoint, saref:Humidity, saref:Motion, saref:Occupancy, saref:Power, saref:Temperature."
             }
         },
         {
             "id": "count_devices_by_status",
             "file": "count_devices_by_status.rq.j2",
-            "description": "Counts the number of unique devices that reported a specific status within a given time period.",
+            "description": "\n        Counts the number of unique devices that reported a specific status within a given time period.\n        Example: 'How many devices are currently active?'\n        Example: 'How many devices were inactive during the last week?'\n        ",
             "params": {
                 "status": "The device status to count ('active' or 'inactive').",
-                "min_time": "Start time in ISO format (YYYY-MM-DDTHH:MM:SS).",
-                "max_time": "End time in ISO format (YYYY-MM-DDTHH:MM:SS)."
+                "min_time": "Starting time of the queried period in ISO format (YYYY-MM-DDTHH:MM:SS).",
+                "max_time": "Ending time of the queried period in ISO format (YYYY-MM-DDTHH:MM:SS)."
             }
         },
         {
             "id": "was_window_opened_on_floor",
             "file": "was_window_opened_on_floor.rq.j2",
-            "description": "Checks if a window (contact sensor) was opened on a floor during a time period.",
+            "description": "\n        Checks if a window (contact sensor) was opened on a <floor> during a time period.\n        Example: 'Was a window opened on the <floor> during the last week of <month> <year>?'\n        ",
             "params": {
                 "floor": "The name of the floor to query in format VL_floor_<number> (e.g., VL_floor_7).",
-                "min_time": "Start time in ISO format (YYYY-MM-DDTHH:MM:SS).",
-                "max_time": "End time in ISO format (YYYY-MM-DDTHH:MM:SS)."
+                "min_time": "Starting time of the queried period in ISO format (YYYY-MM-DDTHH:MM:SS).",
+                "max_time": "Ending time of the queried period in ISO format (YYYY-MM-DDTHH:MM:SS)."
             }
         },
         {
             "id": "count_window_openings_on_floor",
             "file": "count_window_openings_on_floor.rq.j2",
-            "description": "Counts how many times a window (contact sensor) was opened on a floor during a time period.",
+            "description": "\n        Counts how many times a window (contact sensor) was opened on a floor during a time period.\n        Example: 'How many times was a window opened on the <floor> during <month> of <year>?'\n        Example: 'Count the number of window openings on the <floor> in the last week.'\n        ",
             "params": {
                 "floor": "The name of the floor to query in format VL_floor_<number> (e.g., VL_floor_7).",
-                "min_time": "Start time in ISO format (YYYY-MM-DDTHH:MM:SS).",
-                "max_time": "End time in ISO format (YYYY-MM-DDTHH:MM:SS)."
+                "min_time": "Starting time of the queried period in ISO format (YYYY-MM-DDTHH:MM:SS).",
+                "max_time": "Ending time of the queried period in ISO format (YYYY-MM-DDTHH:MM:SS)."
             }
         },
         {
             "id": "list_device_properties",
             "file": "list_device_properties.rq.j2",
-            "description": "Lists all measurement properties a given device is capable of, returned as a single comma-separated string.",
+            "description": "\n        Lists (enumerates) all measurement properties a given device is capable of, returned as a single comma-separated string.\n        Example: 'What properties does the <device> support?'\n        Example: 'What measurements can I get from <device>?'\n        ",
             "params": {
-                "device": "The name of the device to query, possibe formats are R5_<number>, SmartSense_Multi_Sensor_<number>, Zigbee_Thermostat_<number>."
+                "device": "The name of the device to query, possible formats are R5_<number>, SmartSense_Multi_Sensor_<number>, Zigbee_Thermostat_<number>."
             }
         },
         {
             "id": "list_devices_and_types_on_floor",
             "file": "list_devices_and_types_on_floor.rq.j2",
-            "description": "Lists all devices and their types located on a specific floor.",
+            "description": "\n        Lists all devices and their types located on a specific floor.\n        Example: 'What devices are located on the <floor>?'\n        Example: 'List all devices and their types on the <floor>.'\n        ",
             "params": {
                 "floor": "The name of the floor to query in format VL_floor_<number> (e.g., VL_floor_7)."
             }

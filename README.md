@@ -50,10 +50,6 @@ To see the list of all make commands use `make help`.
 3. Use `make up` to build the services. You may need to use additional make commands, and other manual commands to develop new code in this setup.
 
 
-TODO:
-[] mini graph for demo
-
-
 # How to add a new dataset / graph?
 
 Prerequisites: 
@@ -65,3 +61,11 @@ To create a new empty dataset run:
 
 To add a new dataset and populate it with .ttl files from a specified directory, run:
 `make fuseki-load-dataset DATASET_NAME=<your-dataset-name> DATASET_DIR=<dir-with-ttl-files>"
+
+
+## TODO
+- [X] mini graph for demo
+- [X] clear make, make Make commands clear and consistent, add descriptions in help
+- [] write nice README
+- [] write Setup Guide in README
+- [] write Usage Guide in README

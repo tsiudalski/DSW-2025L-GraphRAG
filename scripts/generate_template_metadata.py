@@ -7,20 +7,8 @@ from enum import Enum
 # Add the project root to the sys.path to allow imports from app.models
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from app.models import TEMPLATE_REGISTRY  # Corrected import path
+from app.models import TEMPLATE_REGISTRY
 from app.models.templates import BaseTemplate
-from app.models import params  # Explicitly import params module
-
-# No need to import individual param types if we're not hardcoding checks for them
-# from app.models.params import (
-#     DeviceID,
-#     DeviceModel,
-#     DeviceStatus,
-#     FloorID,
-#     Property,
-#     PropertyType,
-#     Timestamp,
-# )
 
 OUTPUT_FILE = "app/data/template_metadata.json"
 
@@ -84,7 +72,7 @@ def get_param_info(param_type: Type) -> str:
         final_info
         if final_info
         else str(getattr(param_type, "__name__", str(param_type)))
-    )  # Fallback
+    )
 
 
 def generate_template_metadata():
@@ -96,12 +84,9 @@ def generate_template_metadata():
             issubclass(template_class, BaseTemplate)
             and template_class is not BaseTemplate
         ):
-            # required_params = [] # This will be removed
             param_details = {}
 
             for field_name, field_info in template_class.model_fields.items():
-                # if field_info.is_required(): # This logic is no longer needed if required_parameters is removed
-                #     required_params.append(field_name)
 
                 description = (
                     field_info.description
@@ -122,8 +107,7 @@ def generate_template_metadata():
                     "id": template_class.template_name,
                     "file": f"{template_class.template_name}.rq.j2",
                     "description": template_class.template_description,
-                    # "required_parameters": required_params, # This will be removed from the output
-                    "params": param_details,  # Renamed from parameter_descriptions
+                    "params": param_details,
                 }
             )
 

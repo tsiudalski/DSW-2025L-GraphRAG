@@ -35,7 +35,7 @@ class DeviceID(str):
                 value = f"ic:{value}"
             if not cls.DEVICE_REGEX.match(value):
                 raise ValueError(
-                    "Device ID must match one of the patterns: 'R5_<number>', 'SmartSense_Multi_Sensor_<number>', or 'Zigbee_Thermostat_<number>'"
+                    f"Device ID must match one of the patterns: 'R5_<number>', 'SmartSense_Multi_Sensor_<number>', or 'Zigbee_Thermostat_<number>'. Got: {value}"
                 )
             return value
 
@@ -71,7 +71,7 @@ class FloorID(str):
                 value = f"ic:{value}"
             if not cls.FLOOR_ID_REGEX.match(value):
                 raise ValueError(
-                    "Floor ID must match the pattern 'VL_floor_<number>' (e.g., 'VL_floor_7')"
+                    f"Floor ID must match the pattern 'VL_floor_<number>' (e.g., 'VL_floor_7'). Got: {value}"
                 )
             return value
 

@@ -36,7 +36,7 @@ class SPARQLQueryProcessor:
         self.embedding_model_name = os.getenv(
             "EMBEDDING_MODEL", "mixedbread-ai/mxbai-embed-large-v1"
         )
-        self.embedding_model = SentenceTransformer(self.embedding_model_name)
+        self.embedding_model = SentenceTransformer(self.embedding_model_name, trust_remote_code=True)
 
         # Load or compute template embeddings
         data_dir = os.path.join(os.path.dirname(templates_dir), "data")
@@ -82,31 +82,42 @@ class SPARQLQueryProcessor:
         """Find the most relevant template for the user query."""
         query_embedding = self.embedding_model.encode(user_query)
 
-        best_score = -1
-        best_template = None
-
+        # Calculate similarities for all templates
+        template_scores = []
         for template_id, template_embedding in self.template_embeddings.items():
             similarity = np.dot(query_embedding, template_embedding) / (
                 np.linalg.norm(query_embedding) * np.linalg.norm(template_embedding)
             )
-            if similarity > best_score:
-                best_score = similarity
-                best_template = TEMPLATE_REGISTRY[template_id]
+            template_scores.append((template_id, similarity))
 
-        return best_template
+        # Sort by similarity score in descending order
+        template_scores.sort(key=lambda x: x[1], reverse=True)
+
+        # Print top 3 templates and their similarities
+        print("\nTop 3 matching templates:")
+        print("------------------------")
+        for template_id, similarity in template_scores[:3]:
+            print(f"{template_id}: {similarity:.4f}")
+        print("------------------------\n")
+
+        # Return the best template
+        best_template_id = template_scores[0][0]
+        return TEMPLATE_REGISTRY[best_template_id]
 
     def _call_ollama(
         self, prompt: str, max_retries: int = 3, timeout: int = 60, stream: bool = False
     ) -> str:
         """Make a direct HTTP call to Ollama API with retries."""
+        # Get the model from environment variable with a default fallback
+        model = os.getenv("OLLAMA_MODEL", "llama2")
+        print(f"Using Ollama model: {model}")  # Add logging to show which model is being used
+        
         for attempt in range(max_retries):
             try:
                 response = requests.post(
                     f"{self.ollama_host}/api/generate",
                     json={
-                        "model": os.getenv(
-                            "OLLAMA_MODEL", "llama2"
-                        ),  # Read from environment variable
+                        "model": model,
                         "prompt": prompt,
                         "stream": stream,
                     },
