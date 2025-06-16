@@ -15,7 +15,7 @@ This system is built around the **OfficeGraph** dataset — an RDF knowledge gra
 - **Time Range**: from March 1, 2022 to January 31, 2023
 - **Measurements**: 11 different types (e.g., temperature, CO₂, humidity)
 - **Scale**: ~90 million RDF triples
-- **Demo Scope**: Subgraph for devices located on the 7th floor (~ 1.8M triples)
+- **Demo Scope**: Subgraph for devices located on the 7th floor (~1.8M triples)
 
 **Example Schema**
 ![Example Samsung device schema](https://github.com/user-attachments/assets/6fe595b9-ac20-4c4b-9789-87102444e6d3)
@@ -35,7 +35,7 @@ Make sure the following **tools** are installed on your system:
 Make sure you have enough **disc space** for the following:
 - LLM Model (by default `mistral:instruct` via Ollama): ~4.1GB
 - Embedding model (by defualt `nomic-ai/nomic-embed-text-v1.5`): ~900MB
-- Demo subset of OfficeGraph dataset (7th floor only): ~1.8 triples (~ 4MB)
+- Demo subset of OfficeGraph dataset (7th floor only): ~1.8M triples (~ 4MB)
 - Full OfficeGraph dataset: ~90M triples ~100GB+ (refer to [dataset repository]((https://github.com/RoderickvanderWeerdt/OfficeGraph/tree/main) ))
 
 
