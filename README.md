@@ -44,8 +44,8 @@ Make sure you have enough **disc space** for the following:
 
 1. Clone the repository and launch the services:
 ```bash
-git clone https://github.com/<your-org>/OfficeGraph-QA-Chat.git  # Clones this repository
-cd OfficeGraph-QA-Chat  # Enters project root
+git clone https://github.com/tsiudalski/DSW-2025L-GraphRAG  # Clones this repository
+cd DSW-2025L-GraphRAG  # Enters project root
 make up            # Starts Fuseki and Ollama containers
 ```
 2. Pull the Ollama model
@@ -88,9 +88,11 @@ Follow the URLs printed in terminal to open the app in the web browser.
 > **Note**: In case this command throws an error, you may need to run `poetry install` to install the required dependencies and `poetry shell` to activate poetry environment 
 
 **Closing the app**
+
 After finishing using the app, to free the resources, run `make down`.
 
 **Customization**
+
 If you want to use a smaller ollama model, embeddings model, endpoints, or ports, you may change them in `.env` file. Note that before using new LLM, you have to pull it first.
 
 ## Usage
