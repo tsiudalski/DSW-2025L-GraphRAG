@@ -34,9 +34,9 @@ Make sure the following **tools** are installed on your system:
 
 Make sure you have enough **disc space** for the following:
 - LLM Model (by default `mistral:instruct` via Ollama): ~4.1GB
-- Embedding model (by defualt `nomic-ai/nomic-embed-text-v1.5`): ~900MB
-- Demo subset of OfficeGraph dataset (7th floor only): ~1.8M triples (~ 4MB)
-- Full OfficeGraph dataset: ~90M triples ~100GB+ (refer to [dataset repository]((https://github.com/RoderickvanderWeerdt/OfficeGraph/tree/main) ))
+- Embedding model (by default `nomic-ai/nomic-embed-text-v1.5`): ~900MB
+- Demo subset of OfficeGraph dataset (7th floor only): ~4MB
+- Full OfficeGraph dataset: ~100GB+ (refer to [dataset repository]((https://github.com/RoderickvanderWeerdt/OfficeGraph/tree/main) ))
 
 
 ### Quickstart
