@@ -15,7 +15,7 @@ This system is built around the **OfficeGraph** dataset — an RDF knowledge gra
 - **Time Range**: from March 1, 2022 to January 31, 2023
 - **Measurements**: 11 different types (e.g., temperature, CO₂, humidity)
 - **Scale**: ~90 million RDF triples
-- **Demo Scope**: Subgraph for devices located on the 7th floor (~1.8M triples)
+- **Demo Scope**: Subgraph for devices located on the 7th floor (~ 1.8M triples)
 
 **Example Schema**
 ![Example Samsung device schema](https://github.com/user-attachments/assets/6fe595b9-ac20-4c4b-9789-87102444e6d3)
